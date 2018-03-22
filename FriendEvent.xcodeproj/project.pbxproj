@@ -14,7 +14,17 @@
 		5C03F9C7204D5D55000DFD08 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C03F9C6204D5D55000DFD08 /* Assets.xcassets */; };
 		5C03F9CA204D5D55000DFD08 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C03F9C8204D5D55000DFD08 /* LaunchScreen.storyboard */; };
 		5C03F9D2204D682C000DFD08 /* AddPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F9D1204D682C000DFD08 /* AddPin.swift */; };
-		5C9A4E43204EA16D0037A004 /* Friends.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E42204EA16D0037A004 /* Friends.swift */; };
+		5C07AEB12057082600D961DE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5C07AEB02057082600D961DE /* GoogleService-Info.plist */; };
+		5C07AEB420580EC000D961DE /* LogIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEB320580EC000D961DE /* LogIn.swift */; };
+		5C07AEDF205AB0E900D961DE /* FriendSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEDE205AB0E900D961DE /* FriendSystem.swift */; };
+		5C07AEE1205AB24800D961DE /* Friends.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEE0205AB24800D961DE /* Friends.swift */; };
+		5C07AEE3205AB81600D961DE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEE2205AB81600D961DE /* User.swift */; };
+		5C07AEE5205ABF3C00D961DE /* FindFriends.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEE4205ABF3C00D961DE /* FindFriends.swift */; };
+		5C07AEE7205AF7AA00D961DE /* TableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEE6205AF7AA00D961DE /* TableCell.swift */; };
+		5C07AEE9205B2D9B00D961DE /* FriendRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEE8205B2D9B00D961DE /* FriendRequests.swift */; };
+		5C07AEEB205BDF8100D961DE /* FriendRequestTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEEA205BDF8100D961DE /* FriendRequestTableCell.swift */; };
+		5C07AEEF205BF7B000D961DE /* MyFriends.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEEE205BF7B000D961DE /* MyFriends.swift */; };
+		5C549A8B20626E9600B65096 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C549A8A20626E9600B65096 /* CanvasView.swift */; };
 		5C9A4E702052B6890037A004 /* viewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E6F2052B6890037A004 /* viewExtension.swift */; };
 		5C9A4E722052B86A0037A004 /* NewEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E712052B86A0037A004 /* NewEvent.swift */; };
 		5C9A4E742052B89A0037A004 /* EventList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E732052B89A0037A004 /* EventList.swift */; };
@@ -28,9 +38,13 @@
 		5C9A4E87205558DB0037A004 /* UIViewX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E7D205558DB0037A004 /* UIViewX.swift */; };
 		5C9A4E88205558DB0037A004 /* UIVisualEffectViewX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E7E205558DB0037A004 /* UIVisualEffectViewX.swift */; };
 		5C9A4E89205558DB0037A004 /* UISliderX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E7F205558DB0037A004 /* UISliderX.swift */; };
+		5CFB4F03205FDACD00D3C8F0 /* ReusableButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */; };
+		5CFB4F072060608B00D3C8F0 /* TitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFB4F062060608B00D3C8F0 /* TitleCell.swift */; };
+		E99C010F6950A1339C052063 /* Pods_FriendEvent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C766A0E7077FE80E12970193 /* Pods_FriendEvent.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3E95FFCCD830FA89ADAC5A7E /* Pods-FriendEvent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FriendEvent.release.xcconfig"; path = "Pods/Target Support Files/Pods-FriendEvent/Pods-FriendEvent.release.xcconfig"; sourceTree = "<group>"; };
 		5C03F9B9204D5D55000DFD08 /* FriendEvent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FriendEvent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C03F9BC204D5D55000DFD08 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5C03F9BE204D5D55000DFD08 /* StartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
@@ -40,7 +54,18 @@
 		5C03F9C9204D5D55000DFD08 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5C03F9CB204D5D55000DFD08 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5C03F9D1204D682C000DFD08 /* AddPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPin.swift; sourceTree = "<group>"; };
-		5C9A4E42204EA16D0037A004 /* Friends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friends.swift; sourceTree = "<group>"; };
+		5C07AEB02057082600D961DE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		5C07AEB22057232F00D961DE /* FriendEvent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FriendEvent.entitlements; sourceTree = "<group>"; };
+		5C07AEB320580EC000D961DE /* LogIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogIn.swift; sourceTree = "<group>"; };
+		5C07AEDE205AB0E900D961DE /* FriendSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FriendSystem.swift; path = /Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/FriendsHandler/FriendSystem.swift; sourceTree = "<absolute>"; };
+		5C07AEE0205AB24800D961DE /* Friends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Friends.swift; path = /Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/FriendsHandler/Friends.swift; sourceTree = "<absolute>"; };
+		5C07AEE2205AB81600D961DE /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		5C07AEE4205ABF3C00D961DE /* FindFriends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindFriends.swift; sourceTree = "<group>"; };
+		5C07AEE6205AF7AA00D961DE /* TableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableCell.swift; sourceTree = "<group>"; };
+		5C07AEE8205B2D9B00D961DE /* FriendRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequests.swift; sourceTree = "<group>"; };
+		5C07AEEA205BDF8100D961DE /* FriendRequestTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequestTableCell.swift; sourceTree = "<group>"; };
+		5C07AEEE205BF7B000D961DE /* MyFriends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFriends.swift; sourceTree = "<group>"; };
+		5C549A8A20626E9600B65096 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		5C9A4E6F2052B6890037A004 /* viewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = viewExtension.swift; sourceTree = "<group>"; };
 		5C9A4E712052B86A0037A004 /* NewEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEvent.swift; sourceTree = "<group>"; };
 		5C9A4E732052B89A0037A004 /* EventList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventList.swift; sourceTree = "<group>"; };
@@ -54,6 +79,10 @@
 		5C9A4E7D205558DB0037A004 /* UIViewX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewX.swift; sourceTree = "<group>"; };
 		5C9A4E7E205558DB0037A004 /* UIVisualEffectViewX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIVisualEffectViewX.swift; sourceTree = "<group>"; };
 		5C9A4E7F205558DB0037A004 /* UISliderX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UISliderX.swift; sourceTree = "<group>"; };
+		5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableButtonCell.swift; sourceTree = "<group>"; };
+		5CFB4F062060608B00D3C8F0 /* TitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TitleCell.swift; path = /Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/TitleCell.swift; sourceTree = "<absolute>"; };
+		973445D1DA03ADEAB336D8C4 /* Pods-FriendEvent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FriendEvent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FriendEvent/Pods-FriendEvent.debug.xcconfig"; sourceTree = "<group>"; };
+		C766A0E7077FE80E12970193 /* Pods_FriendEvent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FriendEvent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,17 +90,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E99C010F6950A1339C052063 /* Pods_FriendEvent.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18F729EE1503E16231ACA6BE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C766A0E7077FE80E12970193 /* Pods_FriendEvent.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		5C03F9B0204D5D55000DFD08 = {
 			isa = PBXGroup;
 			children = (
 				5C03F9BB204D5D55000DFD08 /* FriendEvent */,
 				5C03F9BA204D5D55000DFD08 /* Products */,
+				92F145C0477357348952C972 /* Pods */,
+				18F729EE1503E16231ACA6BE /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -86,21 +126,50 @@
 		5C03F9BB204D5D55000DFD08 /* FriendEvent */ = {
 			isa = PBXGroup;
 			children = (
+				5C07AEB22057232F00D961DE /* FriendEvent.entitlements */,
 				5C03F9BC204D5D55000DFD08 /* AppDelegate.swift */,
 				5C03F9BE204D5D55000DFD08 /* StartView.swift */,
 				5C9A4E712052B86A0037A004 /* NewEvent.swift */,
+				5C549A8A20626E9600B65096 /* CanvasView.swift */,
 				5C9A4E732052B89A0037A004 /* EventList.swift */,
+				5CFB4F062060608B00D3C8F0 /* TitleCell.swift */,
+				5C07AEB320580EC000D961DE /* LogIn.swift */,
 				5C03F9C0204D5D55000DFD08 /* Main.storyboard */,
-				5C9A4E42204EA16D0037A004 /* Friends.swift */,
+				5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */,
 				5C03F9D1204D682C000DFD08 /* AddPin.swift */,
+				5C07AEE2205AB81600D961DE /* User.swift */,
+				5C07AEED205BDFC900D961DE /* FriendsHandler */,
 				5C03F9C6204D5D55000DFD08 /* Assets.xcassets */,
 				5C03F9C8204D5D55000DFD08 /* LaunchScreen.storyboard */,
 				5C03F9CB204D5D55000DFD08 /* Info.plist */,
 				5C9A4E6F2052B6890037A004 /* viewExtension.swift */,
 				5C03F9C3204D5D55000DFD08 /* FriendEvent.xcdatamodeld */,
+				5C07AEB02057082600D961DE /* GoogleService-Info.plist */,
 				5C9A4E75205558DB0037A004 /* DesignableX */,
 			);
 			path = FriendEvent;
+			sourceTree = "<group>";
+		};
+		5C07AEEC205BDF9D00D961DE /* TableViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				5C07AEE6205AF7AA00D961DE /* TableCell.swift */,
+				5C07AEEA205BDF8100D961DE /* FriendRequestTableCell.swift */,
+			);
+			path = TableViewCells;
+			sourceTree = "<group>";
+		};
+		5C07AEED205BDFC900D961DE /* FriendsHandler */ = {
+			isa = PBXGroup;
+			children = (
+				5C07AEEE205BF7B000D961DE /* MyFriends.swift */,
+				5C07AEE8205B2D9B00D961DE /* FriendRequests.swift */,
+				5C07AEE4205ABF3C00D961DE /* FindFriends.swift */,
+				5C07AEE0205AB24800D961DE /* Friends.swift */,
+				5C07AEDE205AB0E900D961DE /* FriendSystem.swift */,
+				5C07AEEC205BDF9D00D961DE /* TableViewCells */,
+			);
+			path = FriendsHandler;
 			sourceTree = "<group>";
 		};
 		5C9A4E75205558DB0037A004 /* DesignableX */ = {
@@ -120,6 +189,15 @@
 			path = DesignableX;
 			sourceTree = "<group>";
 		};
+		92F145C0477357348952C972 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				973445D1DA03ADEAB336D8C4 /* Pods-FriendEvent.debug.xcconfig */,
+				3E95FFCCD830FA89ADAC5A7E /* Pods-FriendEvent.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -127,9 +205,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5C03F9CE204D5D55000DFD08 /* Build configuration list for PBXNativeTarget "FriendEvent" */;
 			buildPhases = (
+				92E1E7AFCA9C754458D284F1 /* [CP] Check Pods Manifest.lock */,
 				5C03F9B5204D5D55000DFD08 /* Sources */,
 				5C03F9B6204D5D55000DFD08 /* Frameworks */,
 				5C03F9B7204D5D55000DFD08 /* Resources */,
+				37949503EBCEED5DBBE7F722 /* [CP] Embed Pods Frameworks */,
+				B3F7029079E337414A189145 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -153,6 +234,11 @@
 					5C03F9B8204D5D55000DFD08 = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -180,12 +266,80 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C03F9CA204D5D55000DFD08 /* LaunchScreen.storyboard in Resources */,
+				5C07AEB12057082600D961DE /* GoogleService-Info.plist in Resources */,
 				5C03F9C7204D5D55000DFD08 /* Assets.xcassets in Resources */,
 				5C03F9C2204D5D55000DFD08 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		37949503EBCEED5DBBE7F722 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-FriendEvent/Pods-FriendEvent-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FriendEvent/Pods-FriendEvent-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		92E1E7AFCA9C754458D284F1 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FriendEvent-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B3F7029079E337414A189145 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-FriendEvent/Pods-FriendEvent-resources.sh",
+				"${PODS_ROOT}/AccountKit/AccountKitStrings.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccountKitStrings.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FriendEvent/Pods-FriendEvent-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5C03F9B5204D5D55000DFD08 /* Sources */ = {
@@ -195,21 +349,32 @@
 				5C9A4E88205558DB0037A004 /* UIVisualEffectViewX.swift in Sources */,
 				5C9A4E742052B89A0037A004 /* EventList.swift in Sources */,
 				5C9A4E722052B86A0037A004 /* NewEvent.swift in Sources */,
+				5C07AEE1205AB24800D961DE /* Friends.swift in Sources */,
 				5C9A4E89205558DB0037A004 /* UISliderX.swift in Sources */,
+				5C07AEDF205AB0E900D961DE /* FriendSystem.swift in Sources */,
 				5C9A4E82205558DB0037A004 /* UIButtonX.swift in Sources */,
+				5C07AEB420580EC000D961DE /* LogIn.swift in Sources */,
+				5CFB4F072060608B00D3C8F0 /* TitleCell.swift in Sources */,
 				5C9A4E83205558DB0037A004 /* UILabelX.swift in Sources */,
 				5C03F9BF204D5D55000DFD08 /* StartView.swift in Sources */,
 				5C9A4E84205558DB0037A004 /* UIViewAnchorPoint.swift in Sources */,
+				5C07AEE9205B2D9B00D961DE /* FriendRequests.swift in Sources */,
+				5C07AEE5205ABF3C00D961DE /* FindFriends.swift in Sources */,
 				5C9A4E86205558DB0037A004 /* UIImageViewX.swift in Sources */,
 				5C03F9C5204D5D55000DFD08 /* FriendEvent.xcdatamodeld in Sources */,
+				5C549A8B20626E9600B65096 /* CanvasView.swift in Sources */,
 				5C03F9BD204D5D55000DFD08 /* AppDelegate.swift in Sources */,
 				5C9A4E87205558DB0037A004 /* UIViewX.swift in Sources */,
-				5C9A4E43204EA16D0037A004 /* Friends.swift in Sources */,
+				5CFB4F03205FDACD00D3C8F0 /* ReusableButtonCell.swift in Sources */,
 				5C9A4E85205558DB0037A004 /* UIViewControllerX.swift in Sources */,
 				5C9A4E702052B6890037A004 /* viewExtension.swift in Sources */,
+				5C07AEE7205AF7AA00D961DE /* TableCell.swift in Sources */,
 				5C03F9D2204D682C000DFD08 /* AddPin.swift in Sources */,
 				5C9A4E81205558DB0037A004 /* UITextFieldX.swift in Sources */,
 				5C9A4E80205558DB0037A004 /* UIViewXRadialGradient.swift in Sources */,
+				5C07AEE3205AB81600D961DE /* User.swift in Sources */,
+				5C07AEEB205BDF8100D961DE /* FriendRequestTableCell.swift in Sources */,
+				5C07AEEF205BF7B000D961DE /* MyFriends.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,8 +509,10 @@
 		};
 		5C03F9CF204D5D55000DFD08 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 973445D1DA03ADEAB336D8C4 /* Pods-FriendEvent.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FriendEvent/FriendEvent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 92AABK4UP2;
 				INFOPLIST_FILE = FriendEvent/Info.plist;
@@ -359,8 +526,10 @@
 		};
 		5C03F9D0204D5D55000DFD08 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3E95FFCCD830FA89ADAC5A7E /* Pods-FriendEvent.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FriendEvent/FriendEvent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 92AABK4UP2;
 				INFOPLIST_FILE = FriendEvent/Info.plist;

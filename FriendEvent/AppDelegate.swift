@@ -9,42 +9,139 @@
 import UIKit
 import CoreData
 import CoreLocation
+import Firebase
+import FirebaseMessaging
+import FirebaseInstanceID
+import UserNotifications
+import MapKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate {
 
     var window: UIWindow?
     var locationMangager = CLLocationManager()
+    static var locationPlace: CLLocationCoordinate2D?
+    
+    static let NOTIFICATION_URL = "https://gcm-http.googleapis.com/gcm/send"
+    static var DEVICEID = String()
+    static let SERVERKEY = "AAAAz7Aias4:APA91bHd16tDokkhAGfv1wDozUOf91FLcNY5IaAm8iUcPfS0giVqYoKZ25mZySMTboKfODYt4paapm1W6I-IrlAhbDwrdPspscLpyRq01vW0j6nrpORQSxrHwDQO6hHREan7DxgT0CNU"
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-         locationMangager.requestWhenInUseAuthorization()
+        
+        locationMangager.delegate = self
+        locationMangager.requestWhenInUseAuthorization()
+        locationMangager.startUpdatingLocation()
+        
+        
+       
+        FirebaseApp.configure()
+        
+        if #available (iOS 10.0, *){
+            UNUserNotificationCenter.current().delegate = self
+            
+            let option: UNAuthorizationOptions = [.alert, .badge, .sound]
+            UNUserNotificationCenter.current().requestAuthorization(options: option, completionHandler: { (bool, err) in
+                
+            })
+        }
+        else{
+            let settings: UIUserNotificationSettings = UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+            application.registerUserNotificationSettings(settings)
+            
+        }
+        
+        application.registerForRemoteNotifications()
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        
+        
+        
+//        Messaging.messaging().delegate = self as? MessagingDelegate
+//
+//        UNUserNotificationCenter.current().delegate = self
+//
+//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (success, error) in
+//            if error == nil {
+//                print("Successful authorization")
+//            }
+//        }
+//        application.registerForRemoteNotifications()
+//        UIApplication.shared.applicationIconBadgeNumber = 0
+        
+//         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshToken(notification:)), name: NSNotification.Name.InstanceIDTokenRefresh, object: nil)
+//
+//        let token = Messaging.messaging().fcmToken
+//        print("*****FCM token: \(token ?? "")****")
+        
         
         return true
     }
-
-    func applicationWillResignActive(_ application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations[0]
+        AppDelegate.locationPlace = location.coordinate
+        
+//        let span = MKCoordinateSpanMake(<#T##latitudeDelta: CLLocationDegrees##CLLocationDegrees#>, <#T##longitudeDelta: CLLocationDegrees##CLLocationDegrees#>)
+//        let region = MKCoordinateRegion(center: <#T##CLLocationCoordinate2D#>, span: <#T##MKCoordinateSpan#>)
+//
+    }
+    
+    
+    // FOR SINGLE DEVICE MESSAGE
+    
+    
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
+        print("Firebase registration token: \(fcmToken)")
+        guard let newToken = InstanceID.instanceID().token() else {return}
+        AppDelegate.DEVICEID = newToken
+        connectToFCM()
+         
+        // TODO: If necessary send token to application server.
+        // Note: This callback is fired at each app startup and whenever a new token is generated.
+    }
+    
+    
+    
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        let notification = response.notification.request.content.body
+        
+        print(notification)
+        completionHandler()
+        
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        Messaging.messaging().shouldEstablishDirectChannel = false
+        
     }
 
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        guard let token = InstanceID.instanceID().token() else {return}
+        
+        AppDelegate.DEVICEID = token
+        connectToFCM()
+    }
+    
+    func connectToFCM(){
+        Messaging.messaging().shouldEstablishDirectChannel = true
     }
 
+
+    
+    
+    
+    
+    
+    
+    
+    
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+       
+        
     }
 
-    func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-        // Saves changes in the application's managed object context before the application terminates.
-        self.saveContext()
-    }
+
 
     // MARK: - Core Data stack
 
@@ -90,6 +187,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+    
+//    func FBHandler(){
+//        Messaging.messaging().shouldEstablishDirectChannel = true
+//
+//    }
+//
+//    @objc func refreshToken(notification: NSNotification){
+//        let refreshToken = InstanceID.instanceID().token()!
+//        print("***\(refreshToken)***")
+//
+//        FBHandler()
+//    }
 
 }
 

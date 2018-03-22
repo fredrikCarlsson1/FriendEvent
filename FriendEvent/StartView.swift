@@ -8,21 +8,52 @@
 
 import UIKit
 import MapKit
+import FirebaseDatabase
+import FirebaseAuth
+
 
 class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITableViewDataSource {
+    var dbReference: DatabaseReference?
+    var dbHandler: DatabaseHandle?
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    
  
     var pin:AddPin?
 
     @IBOutlet weak var mapView: MKMapView!
-    var friendArray = [Friends]()
-    let steve = Friends(name: "Steve", phoneNumber: "0120412", email: "feef@1.com")
-    let george = Friends(name: "George", phoneNumber: "0120412", email: "feef@1.com")
+    var friendList = [User]()
+    
+    
+    let USER_REF = Database.database().reference().child("users")
+    
+    /** The Firebase reference to the current user tree */
+    var CURRENT_USER_REF: DatabaseReference {
+        let id = Auth.auth().currentUser!.uid
+        return USER_REF.child("\(id)")
+    }
+    /** The Firebase reference to the current user's friend tree */
+    var CURRENT_USER_FRIENDS_REF: DatabaseReference {
+        return CURRENT_USER_REF.child("friends")
+    }
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        dbReference = Database.database().reference()
+        
+        addFriendObserver()
+
+
+        //retrive data
+//        dbHandler = dbReference?.child("name").observe(.childAdded, with: { (snapshot) in
+//             let name:String = (snapshot.value as? String)!
+//            print(name)
+//        })
+//        fetchUsers()
        
-        friendArray.append(steve)
-        friendArray.append(george)
+
         navigationController?.navigationBar.dropShadow()
         
         mapView.delegate = self
@@ -32,10 +63,38 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         gestureRecognizer.delegate = self as? UIGestureRecognizerDelegate
         mapView.addGestureRecognizer(gestureRecognizer)
-        
-        
 
     }
+    /** The list of all friends of the current user. */
+    
+    /** Adds a friend observer. The completion function will run every time this list changes, allowing you
+     to update your UI. */
+    func addFriendObserver() {
+        CURRENT_USER_FRIENDS_REF.observe(DataEventType.value, with: { (snapshot) in
+            self.friendList.removeAll()
+            for child in snapshot.children.allObjects as! [DataSnapshot] {
+                let id = child.key
+                self.getUser(id, completion: { (user) in
+                    self.friendList.append(user)
+                    self.tableView.reloadData()
+                })
+            }
+            // If there are no children, run completion here instead
+            if snapshot.childrenCount == 0 {
+                
+            }
+        })
+    }
+    
+    /** Gets the User object for the specified user id */
+    func getUser(_ userID: String, completion: @escaping (User) -> Void) {
+        USER_REF.child(userID).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            let email = snapshot.childSnapshot(forPath: "Email").value as! String
+            let id = snapshot.key
+            completion(User(email: email, userID: id))
+        })
+    }
+
     
     @objc func handleTap(_ gestureReconizer: UILongPressGestureRecognizer) {
         
@@ -73,14 +132,27 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
 //    
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return friendArray.count
+        return friendList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
-        cell.textLabel?.text = friendArray[indexPath.row].name
+        cell.textLabel?.text = friendList[indexPath.row].email
         return cell
     }
+    
+//    func fetchUsers(){
+//        Database.database().reference().child("users").observe(.childAdded, with: { (snapshot) in
+//            let email = snapshot.childSnapshot(forPath: "Email")
+//            let friend = Friends()
+//            friend.email = email.value as? String
+//            self.userList.append(user)
+//
+//            self.tableView.reloadData()
+//
+//        }, withCancel: nil)
+//    }
+    
     
     @IBAction func newEventSegue(_ sender: UIButton) {
         performSegue(withIdentifier: "newEventSegue", sender: self)
