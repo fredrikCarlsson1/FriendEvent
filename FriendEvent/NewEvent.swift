@@ -15,50 +15,21 @@ import Alamofire
 import FirebaseMessaging
 import FirebaseInstanceID
 import UserNotifications
+import AVFoundation
 
 
-class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, MessagingDelegate, UICollectionViewDelegate, UICollectionViewDataSource  {
+class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, MessagingDelegate, UICollectionViewDelegate, UICollectionViewDataSource, AVAudioRecorderDelegate  {
     
-    var imageReference: StorageReference{
-        return Storage.storage().reference().child("images")
-    }
-    var downloadedImage = UIImageView()
-    
-    func uploadDrawnImage(){
 
-            guard let image = sendImage.image else {return}
-            guard let imageData = UIImageJPEGRepresentation(image, 1) else {return}
-            
-            let uploadRef = imageReference.child("newImage")
-            
-            let uploadTask = uploadRef.putData(imageData, metadata: nil, completion: { (metadata, error) in
-                print("UPLOAD TASK FINISHED")
-                print(metadata ?? "NO meta data")
-                print(error ?? "NO error")
-            })
-            uploadTask.observe(.progress, handler: { (snapshot) in
-                print(snapshot.progress)
-            })
-            uploadTask.resume()
+    
+    var storageReference: StorageReference{
+        return Storage.storage().reference().child("storage")
     }
-    
-    func downloadImage(){
-        let downloadImageRef = imageReference.child("newImage")
-        
-        let downloadTask = downloadImageRef.getData(maxSize: 1024*1024*15) { (data, error) in
-            if let data = data {
-                let image = UIImage(data: data)
-                self.downloadedImage.image = image
-            }
-            print(error ?? "No ERROR")
-        }
-        downloadTask.resume()
-    }
-    
-    
+
     //MARK: MAP VARIBLES
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var myMapView: MKMapView!
+    
     
     
     //MARK: FRIEND VARIBLES
@@ -82,8 +53,11 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     @IBOutlet weak var popUpView: UIViewX!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var firstCollectionView: UICollectionView!
-    
-   
+    @IBOutlet weak var eventDescriptionView: UITextView!
+    @IBOutlet weak var blurView: UIVisualEffectView!
+    @IBOutlet weak var titleTextField: UITextField!
+    @IBOutlet weak var typeOfEventSelectorOutlet: UIButton!
+    @IBOutlet weak var viewBehindPickerWheels: UIDatePicker!
     
     //MARK: DRAWING VARIBLES
     @IBOutlet weak var drawingView: UIView!
@@ -95,29 +69,49 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     var maxLineWidth: CGFloat = 20
     var minLineWidth: CGFloat = 2
     var deltaLineWidth: CGFloat = 2
+    var drawingReference: String?
     
     //MARK: MICROPHONE VARIBLES
     @IBOutlet weak var micView: UIView!
+    var player: AVAudioPlayer?
+    var recordingSession: AVAudioSession!
+    var audioRecorder: AVAudioRecorder!
+    var audioPlayer: AVAudioPlayer!
+    var soundRef: String?
+    
+    @IBOutlet weak var recordingButtonLabel: UIButton!
+    
+    
+    //MARK: DISPLAY LOCATION VARIBLES
+    let geoCoder = CLGeocoder()
+    var annotationLocation: CLLocation?
+    var place: String = ""
+    var adress: String = ""
     
     
     //MARK: OTHER VARIBLES
-    var totalTime: String?
+    var dateTime: String = ""
+    var timeTime: String?
+    var downloadedImage = UIImageView()
+    
 
-    @IBOutlet weak var blurView: UIVisualEffectView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         addFriendObserver()
         searchBar.delegate = self
         popUpView.alpha = 0
         drawingView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
         micView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
-
+        
         
         firstCollectionView.delegate = self
         firstCollectionView.dataSource = self
         
     }
+    
+    
     
     //MARK: MAP FUNCTIONS
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -137,10 +131,11 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
         self.datePickerOutlet.isHidden = true
- 
+        self.viewBehindPickerWheels.isHidden = true
+        
         if let touch = touches.first{
             self.start = touch.location(in: canvas)
-
+            
         }
     }
     
@@ -155,6 +150,8 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     }
     
     func pressed() {
+        setLocation()
+        firstCollectionView.reloadData()
         popUpView.transform = CGAffineTransform(scaleX: 0.4, y: 1.8)
         blurView.isHidden = false
         UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 0, options: .allowUserInteraction, animations: {
@@ -200,6 +197,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
                 
                 //Zooming in on annotation
                 let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(latitude!, longitude!)
+                self.annotationLocation = CLLocation(latitude: latitude!, longitude: longitude!)
                 let span = MKCoordinateSpanMake(0.1, 0.1)
                 let region = MKCoordinateRegionMake(coordinate, span)
                 self.myMapView.setRegion(region, animated: true)
@@ -225,14 +223,50 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
                 switch indexPath.item{
                 case 0:
                     let cell1 =  collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as! ReusableButtonCell
-                    if let time = totalTime{
-                        cell1.dateLabel.text = time
+                    
+                        cell1.dateLabel.text = dateTime
+                    
+                    if let time = timeTime{
+                        cell1.dateUnderLabel.text = time
                     }
+                    
                     return cell1
                 case 1:
                     return collectionView.dequeueReusableCell(withReuseIdentifier: "cell3", for: indexPath)
                 case 2:
-                    return collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath)
+                    let cell2 =  collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as! ReusableButtonCell
+                    cell2.locationTitleLabel.text = self.place
+                    
+                    if let location = annotationLocation {
+                        geoCoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
+                            
+                            // Place details
+                            var placeMark: CLPlacemark!
+                            placeMark = placemarks?[0]
+                            
+                            //                            // Complete address as PostalAddress
+                            //                            print(placeMark.postalCode as Any)  //  Import Contacts
+                            //
+                            //                            // Location name
+                            //                            if let locationName = placeMark.name  {
+                            //                                print (locationName)
+                            //                            }
+                            
+                            // Street address
+                            if let street = placeMark.thoroughfare {
+                                print(street)
+                                
+                                cell2.locationDescriptionLabel.text = street
+                            }
+                            
+                            //                            // Country
+                            //                            if let country = placeMark.country {
+                            //                                print(country)
+                            //                            }
+                        })
+                    }
+                    
+                    return cell2
                 case 3:
                     return collectionView.dequeueReusableCell(withReuseIdentifier: "cell4", for: indexPath)
                 default:
@@ -253,14 +287,14 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         return cell
         
     }
-  
+    
     //MARK: DRAWING FUNCTIONS
     @IBAction func drawingButtonPressed(_ sender: UIButton) {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.curveEaseIn], animations: {
             self.drawingView.transform = .identity
         }, completion: nil)
     }
-
+    
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first{
             let end = touch.location(in: canvas)
@@ -316,17 +350,49 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         paintColor = (sender.backgroundColor?.cgColor)!
     }
     
+    func uploadDrawnImage(){
+        
+        guard let image = sendImage.image else {return}
+        guard let imageData = UIImageJPEGRepresentation(image, 1) else {return}
+        
+        self.drawingReference = "\(CURRENT_USER_ID)\(self.generateRandomNumber())"
+        
+        let uploadRef = storageReference.child("images").child(drawingReference!)
+        
+        
+        let uploadTask = uploadRef.putData(imageData, metadata: nil, completion: { (metadata, error) in
+            print("UPLOAD TASK FINISHED")
+            print(metadata ?? "NO meta data")
+            print(error ?? "NO error")
+        })
+        uploadTask.resume()
+        print("DDDDDDDDDOOOOOOOOONE")
+    }
     
-//    @IBAction func increaseWidth(_ sender: UIBarButtonItem) {
-//        if (lineWidht<maxLineWidth){
-//            lineWidht = lineWidht + deltaLineWidth
-//        }
-//    }
-//    @IBAction func decreaseWidth(_ sender: UIBarButtonItem) {
-//        if(lineWidht>minLineWidth){
-//            lineWidht = lineWidht - deltaLineWidth
-//        }
-//    }
+    func downloadImage(){
+        let downloadImageRef = storageReference.child("storage")
+        
+        let downloadTask = downloadImageRef.getData(maxSize: 1024*1024*15) { (data, error) in
+            if let data = data {
+                let image = UIImage(data: data)
+                self.downloadedImage.image = image
+            }
+            print(error ?? "No ERROR")
+        }
+        downloadTask.resume()
+    }
+    
+    
+    //    @IBAction func increaseWidth(_ sender: UIBarButtonItem) {
+    //        if (lineWidht<maxLineWidth){
+    //            lineWidht = lineWidht + deltaLineWidth
+    //        }
+    //    }
+    //    @IBAction func decreaseWidth(_ sender: UIBarButtonItem) {
+    //        if(lineWidht>minLineWidth){
+    //            lineWidht = lineWidht - deltaLineWidth
+    //        }
+    //    }
     
     
     
@@ -412,7 +478,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     func setUpPushNotification(fromDevice: String){
         let message = "\("XXX") invited you to a new event!"
         
-        let title = "Quick Invite"
+        let title = "Quick Inviter"
         let body = message
         let toDeviceID = fromDevice
         var headers: HTTPHeaders =   HTTPHeaders()
@@ -434,41 +500,52 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         //        USER_REF.child(userID).child("Event").child("Title").setValue(titleTextField.text)
         //        USER_REF.child(userID).child("Event").child("Title").child(titleTextField.text!).setValue("2e")
         
+        if(titleTextField.text != ""){
+            print ("latitude \(Double((annotationLocation?.coordinate.latitude)!)), longitude: \(Double((annotationLocation?.coordinate.longitude)!))")
+            let position = ["latitude": Double((annotationLocation?.coordinate.latitude)!), "longitude": Double((annotationLocation?.coordinate.longitude)!)] as [String: Double]
         let key = USER_REF.child(userID).child("posts").childByAutoId().key
-        let post = ["uid": "2",
-                    "author": "2",
-                    "title": "2",
-                    "body": "2"]
-        let childUpdates = ["/\(userID)/Events/\(key)/": post]
+            let posts = ["sender": String(CURRENT_USER_ID), "title": titleTextField.text!, "description": self.eventDescriptionView.text, "time": String(dateTime), "imageRef": self.drawingReference ?? "0", "soundRef": self.soundRef ?? "0", "position": position ] as [String : Any]
+            
+        let childUpdates = ["/\(userID)/Events/\(key)/": posts]
         USER_REF.updateChildValues(childUpdates)
+
         sendMessage(key: userID)
+        }
+        else {
+            displayAlert(title: "Missing event-title", message: "You need to enter the name of your event")
+        }
     }
     
     @IBAction func sendInviteButton(_ sender: UIButton) {
+        uploadDrawnImage()
         popUpView.alpha = 0
         for friend in selectedFriends{
             sendInvite(userID: friend.id)
         }
-        uploadDrawnImage()
+        self.blurView.isHidden = true
     }
     
-
+    
     //MARK: SET DATE AND TIME ON EVENT FUNCTIONS
     @IBAction func selectDateButton(_ sender: UIButton) {
         datePickerOutlet.isHidden = false
+        viewBehindPickerWheels.isHidden = false
     }
-
+    
     @IBAction func datePicker(_ sender: UIDatePicker) {
+        
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = DateFormatter.Style.medium
+        dateFormatter.dateStyle = DateFormatter.Style.short
         let timeFormatter = DateFormatter()
-        dateFormatter.timeStyle = DateFormatter.Style.short
- 
+        timeFormatter.timeStyle = DateFormatter.Style.short
+        
         let strDate = dateFormatter.string(from: datePickerOutlet.date)
         let strTime = timeFormatter.string(from: datePickerOutlet.date)
-        totalTime = "\(strDate) \n \(strTime)"
+        
+        self.dateTime = "\(strDate)"
+        self.timeTime = "\(strTime)"
         firstCollectionView.reloadData()
-      
+        
     }
     
     @IBOutlet weak var datePickerOutlet: UIDatePicker!
@@ -477,21 +554,196 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     //MARK: SET LOCATION IN POPUP
     
     @IBAction func locationButtonPressed(_ sender: UIButton) {
+        
     }
+    
+    func setLocation(){
+        if let searchText = searchBar.text{
+            self.place = searchText
+        }
+        getAddress()
+        
+    }
+    func getAddress(){
+    
+    }
+    
     
     //MARK: ADD MICROPHONE SOUND
     
     @IBAction func microphoneButtonPressed(_ sender: UIButton) {
+        recordingSession = AVAudioSession.sharedInstance()
+        
+        AVAudioSession.sharedInstance().requestRecordPermission { (hasPermission) in
+            if hasPermission{
+                print ("accepted")
+            }
+        }
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.curveEaseIn], animations: {
             self.micView.transform = .identity
         }, completion: nil)
     }
     
+    @IBAction func recordButton(_ sender: UIButton) {
+        
+        if audioRecorder == nil{
+            let filename = getDirectory().appendingPathComponent("track.m4a")
+            let settings = [AVFormatIDKey: Int(kAudioFormatMPEG4AAC), AVSampleRateKey: 12000, AVNumberOfChannelsKey: 1, AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue]
+            
+            do{
+                
+                print("recording:")
+                print(filename)
+                audioRecorder = try AVAudioRecorder(url: filename, settings: settings)
+                
+                audioRecorder.delegate = self
+                audioRecorder.record()
+                audioRecorder.stop()
+                SetSessionPlayerOn()
+                audioRecorder.record()
+                recordingButtonLabel.setTitle("Stop Recording", for: .normal)
+            }
+            catch{
+                displayAlert(title: "Error", message: "Recording failed")
+            }
+        }
+        else {
+            audioRecorder.stop()
+            SetSessionPlayerOff()
+            audioRecorder = nil
+            recordingButtonLabel.setTitle("Start recording", for: .normal)
+            
+        }
+    }
     
     
-    //MARK SELECT TYPE OF EVENT
+    func SetSessionPlayerOn() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayAndRecord)
+        } catch _ {
+        }
+        do {
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch _ {
+        }
+        do {
+            try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSessionPortOverride.speaker)
+        } catch _ {
+        }
+    }
     
+    func SetSessionPlayerOff() {
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        } catch _ {
+        }
+    }
+    
+    func getDirectory() -> URL{
+        let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentDirectory = path[0]
+        return documentDirectory
+    }
+    
+    func displayAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "dismiss", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    @IBAction func listenToRecording(_ sender: UIButton) {
+        let filename = getDirectory().appendingPathComponent("track.m4a")
+        do{
+            print(filename)
+            audioPlayer = try AVAudioPlayer(contentsOf: filename)
+            audioPlayer.play()
+        }
+        catch{
+            print (error.localizedDescription)
+        }
+        
+    }
+    
+    @IBAction func downloadSoundButton(_ sender: UIButton) {
+        downloadSound(soundReference: "TBA")
+    }
+    
+    func downloadSound(soundReference: String){
+        
+        let pathString = "storage"
+        
+        let downloadSoundRef = storageReference.child(soundReference)
+        
+        let fileUrls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        
+        guard let fileUrl = fileUrls.first?.appendingPathComponent(pathString) else {
+            return
+        }
+        
+        let downloadTask = downloadSoundRef.write(toFile: fileUrl)
+        
+        downloadTask.observe(.success) { _ in
+            do {
+                self.player = try AVAudioPlayer(contentsOf: fileUrl)
+                self.player?.prepareToPlay()
+                self.player?.play()
+            } catch let error {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    @IBAction func uploadSoundButton(_ sender: UIButton) {
+        uploadSound()
+    }
+    
+    func uploadSound() {
+        let localFile = getDirectory().appendingPathComponent("track.m4a")
+        soundRef = "\(CURRENT_USER_ID)\(generateRandomNumber())"
+        
+        let uploadRef = storageReference.child("sound").child(soundRef!)
+        let metadata = StorageMetadata()
+        metadata.contentType = "audio/m4a"
+        
+        let uploadTask = uploadRef.putFile(from: localFile, metadata: metadata) { metadata, error in
+            if let error = error {
+                self.displayAlert(title: "Something went wrong", message: error as! String)
+                // Uh-oh, an error occurred!
+            } else {
+                // Metadata contains file metadata such as size, content-type, and download URL.
+                //let downloadURL = metadata!.downloadURL()
+            }
+        }
+        uploadTask.resume()
+    }
+    
+    @IBAction func closeRecordingView(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.curveEaseIn], animations: {
+            self.micView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
+        }, completion: nil)
+    }
+    
+    //MARK: SELECT TYPE OF EVENT
+    
+    
+    
+    //MARK: OTHER FUNCTIONS
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if eventDescriptionView.textColor == UIColor.lightGray {
+            eventDescriptionView.text = nil
+            eventDescriptionView.textColor = UIColor.black
+        }
+    }
+    
+    func generateRandomNumber()->Int{
+        let random = arc4random_uniform(1000000)
+        return Int(random)
+    }
 
+    
+    @IBAction func typeOfEventSelector(_ sender: UIButton) {
+    }
     
     
 }

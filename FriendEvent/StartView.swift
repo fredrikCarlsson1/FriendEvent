@@ -40,7 +40,7 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
 
     
     override func viewDidLoad() {
-        super.viewDidLoad()
+        super.viewDidLoad()      
         dbReference = Database.database().reference()
         
         addFriendObserver()

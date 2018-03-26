@@ -38,6 +38,10 @@
 		5C9A4E87205558DB0037A004 /* UIViewX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E7D205558DB0037A004 /* UIViewX.swift */; };
 		5C9A4E88205558DB0037A004 /* UIVisualEffectViewX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E7E205558DB0037A004 /* UIVisualEffectViewX.swift */; };
 		5C9A4E89205558DB0037A004 /* UISliderX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E7F205558DB0037A004 /* UISliderX.swift */; };
+		5CB11FCC2064F821006D3FB5 /* UserInvitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB11FCB2064F821006D3FB5 /* UserInvitation.swift */; };
+		5CB11FCE2067EB96006D3FB5 /* EventPopUP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB11FCD2067EB96006D3FB5 /* EventPopUP.swift */; };
+		5CB11FD0206821A8006D3FB5 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB11FCF206821A8006D3FB5 /* Event.swift */; };
+		5CB11FD220683437006D3FB5 /* EventListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB11FD120683437006D3FB5 /* EventListCell.swift */; };
 		5CFB4F03205FDACD00D3C8F0 /* ReusableButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */; };
 		5CFB4F072060608B00D3C8F0 /* TitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFB4F062060608B00D3C8F0 /* TitleCell.swift */; };
 		E99C010F6950A1339C052063 /* Pods_FriendEvent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C766A0E7077FE80E12970193 /* Pods_FriendEvent.framework */; };
@@ -79,6 +83,10 @@
 		5C9A4E7D205558DB0037A004 /* UIViewX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewX.swift; sourceTree = "<group>"; };
 		5C9A4E7E205558DB0037A004 /* UIVisualEffectViewX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIVisualEffectViewX.swift; sourceTree = "<group>"; };
 		5C9A4E7F205558DB0037A004 /* UISliderX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UISliderX.swift; sourceTree = "<group>"; };
+		5CB11FCB2064F821006D3FB5 /* UserInvitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInvitation.swift; sourceTree = "<group>"; };
+		5CB11FCD2067EB96006D3FB5 /* EventPopUP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPopUP.swift; sourceTree = "<group>"; };
+		5CB11FCF206821A8006D3FB5 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		5CB11FD120683437006D3FB5 /* EventListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListCell.swift; sourceTree = "<group>"; };
 		5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableButtonCell.swift; sourceTree = "<group>"; };
 		5CFB4F062060608B00D3C8F0 /* TitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TitleCell.swift; path = /Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/TitleCell.swift; sourceTree = "<absolute>"; };
 		973445D1DA03ADEAB336D8C4 /* Pods-FriendEvent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FriendEvent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FriendEvent/Pods-FriendEvent.debug.xcconfig"; sourceTree = "<group>"; };
@@ -130,11 +138,15 @@
 				5C03F9BC204D5D55000DFD08 /* AppDelegate.swift */,
 				5C03F9BE204D5D55000DFD08 /* StartView.swift */,
 				5C9A4E712052B86A0037A004 /* NewEvent.swift */,
+				5CB11FCB2064F821006D3FB5 /* UserInvitation.swift */,
 				5C549A8A20626E9600B65096 /* CanvasView.swift */,
 				5C9A4E732052B89A0037A004 /* EventList.swift */,
+				5CB11FCF206821A8006D3FB5 /* Event.swift */,
 				5CFB4F062060608B00D3C8F0 /* TitleCell.swift */,
 				5C07AEB320580EC000D961DE /* LogIn.swift */,
 				5C03F9C0204D5D55000DFD08 /* Main.storyboard */,
+				5CB11FD120683437006D3FB5 /* EventListCell.swift */,
+				5CB11FCD2067EB96006D3FB5 /* EventPopUP.swift */,
 				5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */,
 				5C03F9D1204D682C000DFD08 /* AddPin.swift */,
 				5C07AEE2205AB81600D961DE /* User.swift */,
@@ -347,12 +359,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C9A4E88205558DB0037A004 /* UIVisualEffectViewX.swift in Sources */,
+				5CB11FCC2064F821006D3FB5 /* UserInvitation.swift in Sources */,
+				5CB11FCE2067EB96006D3FB5 /* EventPopUP.swift in Sources */,
 				5C9A4E742052B89A0037A004 /* EventList.swift in Sources */,
 				5C9A4E722052B86A0037A004 /* NewEvent.swift in Sources */,
 				5C07AEE1205AB24800D961DE /* Friends.swift in Sources */,
 				5C9A4E89205558DB0037A004 /* UISliderX.swift in Sources */,
 				5C07AEDF205AB0E900D961DE /* FriendSystem.swift in Sources */,
+				5CB11FD0206821A8006D3FB5 /* Event.swift in Sources */,
 				5C9A4E82205558DB0037A004 /* UIButtonX.swift in Sources */,
+				5CB11FD220683437006D3FB5 /* EventListCell.swift in Sources */,
 				5C07AEB420580EC000D961DE /* LogIn.swift in Sources */,
 				5CFB4F072060608B00D3C8F0 /* TitleCell.swift in Sources */,
 				5C9A4E83205558DB0037A004 /* UILabelX.swift in Sources */,

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FriendEvent/UserInvitation.swift"
+            timestampString = "543701547.048227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "14"
+            endingLineNumber = "14"
+            landmarkName = "UserInvitation"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FriendEvent.UserInvitation.__deallocating_deinit"
+                  moduleName = "FriendEvent"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/UserInvitation.swift"
+                  timestampString = "543701547.3110861"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FriendEvent.UserInvitation.__allocating_init(nibName: Swift.Optional&lt;Swift.String&gt;, bundle: Swift.Optional&lt;__ObjC.Bundle&gt;) -&gt; FriendEvent.UserInvitation"
+                  moduleName = "FriendEvent"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/UserInvitation.swift"
+                  timestampString = "543701547.31727"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "12">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FriendEvent.UserInvitation.init(nibName: Swift.Optional&lt;Swift.String&gt;, bundle: Swift.Optional&lt;__ObjC.Bundle&gt;) -&gt; FriendEvent.UserInvitation"
+                  moduleName = "FriendEvent"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/UserInvitation.swift"
+                  timestampString = "543701547.3276269"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "77">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FriendEvent.UserInvitation.__allocating_init(coder: __ObjC.NSCoder) -&gt; Swift.Optional&lt;FriendEvent.UserInvitation&gt;"
+                  moduleName = "FriendEvent"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/UserInvitation.swift"
+                  timestampString = "543701547.3326139"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FriendEvent.UserInvitation.init(coder: __ObjC.NSCoder) -&gt; Swift.Optional&lt;FriendEvent.UserInvitation&gt;"
+                  moduleName = "FriendEvent"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/UserInvitation.swift"
+                  timestampString = "543701547.336645"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "46">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

@@ -19,6 +19,11 @@ class ReusableButtonCell: UICollectionViewCell {
     @IBOutlet weak var dateButton: UIButtonX!
     
     @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var dateUnderLabel: UILabel!
+    
+    
+    @IBOutlet weak var locationTitleLabel: UILabel!
+    @IBOutlet weak var locationDescriptionLabel: UILabel!
     
 }
 
