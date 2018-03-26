@@ -17,6 +17,9 @@ class EventPopUP: UIViewController {
     
     @IBOutlet weak var eventDescription: UITextView!
     
+    var event: Event?
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
