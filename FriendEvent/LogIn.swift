@@ -12,9 +12,6 @@ import Firebase
 
 
 class LogIn: UIViewController {
-    
-    
-    
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var buttonOutlet: UIButton!
@@ -25,23 +22,17 @@ class LogIn: UIViewController {
     @IBOutlet weak var forgotPasswordHaveAccountOutlet: UIButton!
     
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
+    //MARK: LoginButton - changes to Create user when SIGN UP button is pressed
     @IBAction func loginButton(_ sender: UIButton) {
         guard let email = emailTextField.text else {return}
         guard let password = passwordTextField.text else {return}
         guard let latitude = AppDelegate.locationPlace?.latitude else {return}
         guard let longitude = AppDelegate.locationPlace?.longitude else {return}
-        
         
         if (emailTextField.text != nil && passwordTextField.text != nil){
             if (loginButtonOutlet.titleLabel?.text == "Login"){ //Log in
@@ -65,43 +56,40 @@ class LogIn: UIViewController {
                     }
                 })
             }
-        
-        else{
-            guard let username = usernameOutlet.text else {return}
+            else{
+                guard let username = usernameOutlet.text else {return}
                 if username != "" {
-            Auth.auth().createUser(withEmail: email, password: password, completion: { (user, error) in
-                if (user != nil){
-                    guard let uid = user?.uid else {return}
-                    let values = ["Email": email, "password": password, "fromDevice": AppDelegate.DEVICEID, "username": username] as [String : Any]
-                    let ref = Database.database().reference().child("users").child(uid)
-                    
-                    ref.updateChildValues(values)
-                    self.alert(title: "Successfully registered!", message: "Welcome to Quick Inviter!")
-                    
-                    self.loginButtonOutlet.setTitle("Login", for: .normal)
-                    self.signUpButtonOutlet.isHidden = false
-                    self.facebookSignUpButtonOutlet.isHidden = false
-                    self.usernameOutlet.isHidden = true
-                }
-                else{
-                    if let myError = error?.localizedDescription{
-                        self.alert(title: "Something went wrong", message: myError)
-                       
-                    }
-                    else {
-                        self.alert(title: "Something went wrong", message: "An error occurred")
-                    }
-                }
-            })
+                    Auth.auth().createUser(withEmail: email, password: password, completion: { (user, error) in
+                        if (user != nil){
+                            guard let uid = user?.uid else {return}
+                            let values = ["Email": email, "password": password, "fromDevice": AppDelegate.DEVICEID, "username": username] as [String : Any]
+                            let ref = Database.database().reference().child("users").child(uid)
+                            ref.updateChildValues(values)
+                            self.alert(title: "Successfully registered!", message: "Welcome to Quick Inviter!")
+                            
+                            self.loginButtonOutlet.setTitle("Login", for: .normal)
+                            self.signUpButtonOutlet.isHidden = false
+                            self.facebookSignUpButtonOutlet.isHidden = false
+                            self.usernameOutlet.isHidden = true
+                        }
+                        else{
+                            if let myError = error?.localizedDescription{
+                                self.alert(title: "Something went wrong", message: myError)
+                            }
+                            else {
+                                self.alert(title: "Something went wrong", message: "An error occurred")
+                            }
+                        }
+                    })
                 }
                 else {
-                    
                     self.alert(title: "Missing username", message: "You have to pick a username to complete the registration")
                 }
             }
         }
     }
     
+    //
     @IBAction func signUpButtonPressed(_ sender: UIButtonX) {
         
         usernameOutlet.isHidden = false
@@ -109,8 +97,9 @@ class LogIn: UIViewController {
         signUpButtonOutlet.isHidden = true
         facebookSignUpButtonOutlet.isHidden = true
         forgotPasswordHaveAccountOutlet.setTitle("I already have an account", for: .normal)
- 
     }
+    
+    //MARK - TODO: send email to user?
     @IBAction func forgotPasswordAndAlreadyHaveAccountButton(_ sender: UIButton) {
         if (forgotPasswordHaveAccountOutlet.titleLabel?.text == "I already have an account"){
             loginButtonOutlet.setTitle("Login", for: .normal)
@@ -124,7 +113,7 @@ class LogIn: UIViewController {
         }
         
     }
-
+    
 }
 
 

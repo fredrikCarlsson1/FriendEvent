@@ -103,12 +103,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FriendEvent/Event.swift"
-            timestampString = "544556889.905686"
+            timestampString = "544709466.53137"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "25"
-            endingLineNumber = "25"
-            landmarkName = "init(title:time:description:soundRef:imageRef:latitude:longitude:type:invitedFriends:host:)"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "init(title:time:description:soundRef:imageRef:latitude:longitude:type:invitedFriends:host:newTextMessage:)"
             landmarkType = "7">
             <Locations>
                <Location
@@ -142,22 +142,6 @@
                   offsetFromSymbolStart = "455">
                </Location>
             </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "FriendEvent/StartView.swift"
-            timestampString = "544692812.362826"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "194"
-            endingLineNumber = "194"
-            landmarkName = "getEvent(_:completion:)"
-            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

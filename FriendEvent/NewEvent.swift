@@ -19,52 +19,14 @@ import AVFoundation
 
 
 class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, MessagingDelegate, UICollectionViewDelegate, UICollectionViewDataSource, AVAudioRecorderDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UITextViewDelegate  {
-    
-    let PURPLE_COLOR = UIColor(hexString: "#8F6886")
-    
-    
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return pickerWheelSelections.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return pickerWheelSelections[row]
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        typeOfEventSelectorOutlet.setTitle(pickerWheelSelections[row], for: .normal)
-        self.typeOfEvent = pickerWheelSelections[row]
-        switch typeOfEvent! {
-        case "Öl":
-            self.imageView.image = UIImage(named: "beer")
-        case "Vin":
-            self.imageView.image = UIImage(named: "wine")
-        case "Bio":
-            self.imageView.image = UIImage(named: "popcorn")
-        case "Middag":
-            self.imageView.image = UIImage(named: "dinner")
-        default:
-            self.imageView.image = UIImage(named: "letter")
-        }
-    }
-    
-    var typeOfEvent: String?
-    
-    
-    var storageReference: StorageReference{
+ var storageReference: StorageReference{
         return Storage.storage().reference().child("storage")
     }
     
     //MARK: MAP VARIBLES
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var myMapView: MKMapView!
-    
-    
-    
+
     //MARK: FRIEND VARIBLES
     var friendList = [User]()
     var selectedFriends = [User]()
@@ -147,7 +109,8 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     var dateTime: String?
     var timeTime: String?
     var totalTime = ""
-    
+    let PURPLE_COLOR = UIColor(hexString: "#8F6886")
+    var typeOfEvent: String?
     var pickerWheelSelections = [String]()
     
     
@@ -171,12 +134,6 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         firstCollectionView.dataSource = self
         
     }
-    
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        textFieldPlaceholder.isHidden = true
-    }
-    
-    
     
     //MARK: MAP FUNCTIONS
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -245,7 +202,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         activeSearch.start { (response, error) in
             if response == nil
             {
-                print("error")
+                self.alert(title: "Oops", message: "Could not find location")
             }
             else{
                 //remove annotation
@@ -315,26 +272,11 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
                             // Place details
                             var placeMark: CLPlacemark!
                             placeMark = placemarks?[0]
-                            
-                            //                            // Complete address as PostalAddress
-                            //                            print(placeMark.postalCode as Any)  //  Import Contacts
-                            //
-                            //                            // Location name
-                            //                            if let locationName = placeMark.name  {
-                            //                                print (locationName)
-                            //                            }
-                            
+
                             // Street address
                             if let street = placeMark.thoroughfare {
-                                print(street)
-                                
                                 cell2.locationDescriptionLabel.text = street
                             }
-                            
-                            //                            // Country
-                            //                            if let country = placeMark.country {
-                            //                                print(country)
-                            //                            }
                         })
                     }
                     
@@ -435,9 +377,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         
         
         let uploadTask = uploadRef.putData(imageData, metadata: nil, completion: { (metadata, error) in
-            print("UPLOAD TASK FINISHED")
-            print(metadata ?? "NO meta data")
-            print(error ?? "NO error")
+            
         })
         uploadTask.resume()
         
@@ -506,11 +446,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     
     // MARK: - SEND PUSH NOTIFICATIONS
     func sendMessage(key: String){
-        //        Database.database().reference().child("users").observeSingleEvent(of: .value) { (snapshot) in
-        //            guard let dictionary = snapshot.value as? [String:Any] else {return}
-        //
-        //            dictionary.forEach({ (key, value) in
-        //
+
         guard let uid = Auth.auth().currentUser?.uid else {return}
         if (key != uid){
             let ref = Database.database().reference().child("messages").child(uid)
@@ -522,8 +458,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
             
             self.fetchMessage(toID: key)
         }
-        //            })
-        //        }
+  
     }
     
     func fetchMessage(toID: String){
@@ -536,7 +471,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     }
     
     func setUpPushNotification(fromDevice: String){
-        let message = "\("XXX") invited you to a new event!"
+        let message = "\(CURRENT_USERNAME!) invited you to a new event!"
         
         let title = "Quick Inviter"
         let body = message
@@ -575,11 +510,11 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
                     let key = USER_REF.child(CURRENT_USER_ID).child("posts").childByAutoId().key
                     let childUpdates = ["/Events/\(key)/": ["eventID": eventID, "hasBeenRead": true]]
                     CURRENT_USER_REF.updateChildValues(childUpdates)
-                    let host1 = ["name": String(host.name), "answer": "Comming"]
+                    let host1 = ["name": String(host.name), "answer": "Comming", "newTextMessage": false] as [String : Any]
                     ref.child("invitedFriends").child(CURRENT_USER_ID).updateChildValues(host1)
                     
                     for friend in selectedFriends{
-                        let post3 = ["name": String(friend.name), "answer": "TBA"]
+                        let post3 = ["name": String(friend.name), "answer": "TBA", "newTextMessage": false] as [String: Any]
                         ref.child("invitedFriends").child(friend.id).updateChildValues(post3)
                     }
                     for friend in selectedFriends{
@@ -602,8 +537,10 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         let key = USER_REF.child(userID).child("posts").childByAutoId().key
         let childUpdates = ["/\(userID)/Events/\(key)/": ["eventID": eventRef, "hasBeenRead": false]]
         USER_REF.updateChildValues(childUpdates)
-        
+
         sendMessage(key: userID)
+        
+        
     }
     
     @IBAction func sendInviteButton(_ sender: UIButton) {
@@ -611,6 +548,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         popUpView.alpha = 0
         sendInvite()
         self.blurView.isHidden = true
+        alert(title: "Invite sent", message: "Enjoy your upcomming event")
     }
     
     
@@ -651,19 +589,15 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         if let searchText = searchBar.text{
             self.place = searchText
         }
-        
-        
     }
     
-    
     //MARK: ADD MICROPHONE SOUND
-    
     @IBAction func microphoneButtonPressed(_ sender: UIButton) {
         recordingSession = AVAudioSession.sharedInstance()
         
         AVAudioSession.sharedInstance().requestRecordPermission { (hasPermission) in
             if hasPermission{
-                print ("accepted")
+                
             }
         }
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.curveEaseIn], animations: {
@@ -678,9 +612,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
             let settings = [AVFormatIDKey: Int(kAudioFormatMPEG4AAC), AVSampleRateKey: 12000, AVNumberOfChannelsKey: 1, AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue]
             
             do{
-                
-                print("recording:")
-                print(filename)
+        
                 audioRecorder = try AVAudioRecorder(url: filename, settings: settings)
                 
                 audioRecorder.delegate = self
@@ -702,7 +634,6 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
             
         }
     }
-    
     
     func SetSessionPlayerOn() {
         do {
@@ -741,12 +672,11 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     @IBAction func listenToRecording(_ sender: UIButton) {
         let filename = getDirectory().appendingPathComponent("track.m4a")
         do{
-            print(filename)
             audioPlayer = try AVAudioPlayer(contentsOf: filename)
             audioPlayer.play()
         }
         catch{
-            print (error.localizedDescription)
+            alert(title: "Error", message: (error.localizedDescription))
         }
         
     }
@@ -782,23 +712,45 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     }
     
     //MARK: SELECT TYPE OF EVENT
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
     
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return pickerWheelSelections.count
+    }
     
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return pickerWheelSelections[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        typeOfEventSelectorOutlet.setTitle(pickerWheelSelections[row], for: .normal)
+        self.typeOfEvent = pickerWheelSelections[row]
+        switch typeOfEvent! {
+        case "Öl":
+            self.imageView.image = UIImage(named: "beer")
+        case "Vin":
+            self.imageView.image = UIImage(named: "wine")
+        case "Bio":
+            self.imageView.image = UIImage(named: "popcorn")
+        case "Middag":
+            self.imageView.image = UIImage(named: "dinner")
+        default:
+            self.imageView.image = UIImage(named: "letter")
+        }
+    }
     
     //MARK: OTHER FUNCTIONS
-
-    
     func generateRandomNumber()->Int{
         let random = arc4random_uniform(1000000)
         return Int(random)
     }
     
-    
     @IBAction func typeOfEventSelector(_ sender: UIButton) {
         pickerWheel.isHidden = false
         datePickerOutlet.isHidden = true
         self.viewBehindPickerWheel.alpha = 1
-        
     }
     
     @IBAction func backgroundButton(_ sender: UIButton) {
@@ -807,6 +759,9 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         backgroundButtonOutlet.isHidden = true
     }
     
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        textFieldPlaceholder.isHidden = true
+    }
     
     
 }

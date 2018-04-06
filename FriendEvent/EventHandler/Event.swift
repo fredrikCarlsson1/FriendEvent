@@ -21,11 +21,11 @@ class Event {
     var eventReference: String?
     var invitedFriends: [[String:[String:String]]]
     let host: String
-    var hasUnreadTextMessage: Bool?
-    var eventIsUnread: Bool?
+    var hasUnreadTextMessage: Bool
+    var hasBeenRead: Bool?
     
     
-    init(title: String, time: String, description: String?, soundRef: String?, imageRef: String?, latitude: Double, longitude: Double, type: String, invitedFriends: [[String:[String:String]]], host: String){
+    init(title: String, time: String, description: String?, soundRef: String?, imageRef: String?, latitude: Double, longitude: Double, type: String, invitedFriends: [[String:[String:String]]], host: String, newTextMessage: Bool = false){
         self.title = title
         self.time = time
         self.description = description
@@ -36,7 +36,7 @@ class Event {
         self.longitude = longitude
         self.invitedFriends = invitedFriends
         self.host = host
-        
+        self.hasUnreadTextMessage = newTextMessage
     }
     
     

@@ -77,7 +77,7 @@
 		5C07AEEE205BF7B000D961DE /* MyFriends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFriends.swift; sourceTree = "<group>"; };
 		5C48149A207104F8008D8398 /* buttonExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = buttonExtension.swift; sourceTree = "<group>"; };
 		5C48149E2073A67E008D8398 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
-		5C4814A22073DF41008D8398 /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MessageCell.swift; path = /Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/MessageCell.swift; sourceTree = "<absolute>"; };
+		5C4814A22073DF41008D8398 /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MessageCell.swift; path = "/Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/Event Map/EventPopUp/MessageCell.swift"; sourceTree = "<absolute>"; };
 		5C549A8A20626E9600B65096 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		5C8BE79C207622170075E1E4 /* ViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerExtensions.swift; sourceTree = "<group>"; };
 		5C8BE7A2207696B10075E1E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -100,7 +100,7 @@
 		5CB11FCF206821A8006D3FB5 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		5CB11FD120683437006D3FB5 /* EventListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListCell.swift; sourceTree = "<group>"; };
 		5CB1201520692489006D3FB5 /* RoundedImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedImage.swift; sourceTree = "<group>"; };
-		5CB1201B206A9C6E006D3FB5 /* InvitedFriendsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InvitedFriendsCell.swift; path = /Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/InvitedFriendsCell.swift; sourceTree = "<absolute>"; };
+		5CB1201B206A9C6E006D3FB5 /* InvitedFriendsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InvitedFriendsCell.swift; path = "/Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/Event Map/EventPopUp/InvitedFriendsCell.swift"; sourceTree = "<absolute>"; };
 		5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableButtonCell.swift; sourceTree = "<group>"; };
 		5CFB4F062060608B00D3C8F0 /* TitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TitleCell.swift; path = /Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/TitleCell.swift; sourceTree = "<absolute>"; };
 		973445D1DA03ADEAB336D8C4 /* Pods-FriendEvent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FriendEvent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FriendEvent/Pods-FriendEvent.debug.xcconfig"; sourceTree = "<group>"; };
@@ -153,31 +153,20 @@
 				5C07AEB320580EC000D961DE /* LogIn.swift */,
 				5C03F9BE204D5D55000DFD08 /* StartView.swift */,
 				5C9A4E712052B86A0037A004 /* NewEvent.swift */,
+				5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */,
+				5CFB4F062060608B00D3C8F0 /* TitleCell.swift */,
+				5C8BE7A62077A3F40075E1E4 /* EventHandler */,
+				5C07AEED205BDFC900D961DE /* FriendsHandler */,
+				5C03F9C0204D5D55000DFD08 /* Main.storyboard */,
+				5C03F9C8204D5D55000DFD08 /* LaunchScreen.storyboard */,
+				5C8BE7A2207696B10075E1E4 /* Assets.xcassets */,
+				5C03F9D1204D682C000DFD08 /* AddPin.swift */,
 				5CB11FCB2064F821006D3FB5 /* UserInvitation.swift */,
 				5C549A8A20626E9600B65096 /* CanvasView.swift */,
-				5C9A4E732052B89A0037A004 /* EventList.swift */,
-				5CB11FD120683437006D3FB5 /* EventListCell.swift */,
-				5CB11FCF206821A8006D3FB5 /* Event.swift */,
-				5CFB4F062060608B00D3C8F0 /* TitleCell.swift */,
-				5CB1201B206A9C6E006D3FB5 /* InvitedFriendsCell.swift */,
-				5C03F9C0204D5D55000DFD08 /* Main.storyboard */,
-				5C4814A22073DF41008D8398 /* MessageCell.swift */,
-				5C48149E2073A67E008D8398 /* Messages.swift */,
-				5CB11FCD2067EB96006D3FB5 /* EventPopUP.swift */,
-				5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */,
-				5C03F9D1204D682C000DFD08 /* AddPin.swift */,
-				5C07AEE2205AB81600D961DE /* User.swift */,
-				5C8BE7A2207696B10075E1E4 /* Assets.xcassets */,
-				5C07AEED205BDFC900D961DE /* FriendsHandler */,
-				5C03F9C8204D5D55000DFD08 /* LaunchScreen.storyboard */,
-				5C03F9CB204D5D55000DFD08 /* Info.plist */,
-				5C8BE79C207622170075E1E4 /* ViewControllerExtensions.swift */,
-				5CB1201520692489006D3FB5 /* RoundedImage.swift */,
-				5C48149A207104F8008D8398 /* buttonExtension.swift */,
-				5C9A4E6F2052B6890037A004 /* viewExtension.swift */,
 				5C03F9C3204D5D55000DFD08 /* FriendEvent.xcdatamodeld */,
+				5C03F9CB204D5D55000DFD08 /* Info.plist */,
 				5C07AEB02057082600D961DE /* GoogleService-Info.plist */,
-				5C9A4E75205558DB0037A004 /* DesignableX */,
+				5C8BE7A72077A49E0075E1E4 /* Extensions */,
 			);
 			path = FriendEvent;
 			sourceTree = "<group>";
@@ -194,6 +183,7 @@
 		5C07AEED205BDFC900D961DE /* FriendsHandler */ = {
 			isa = PBXGroup;
 			children = (
+				5C07AEE2205AB81600D961DE /* User.swift */,
 				5C8BE7A42076C75B0075E1E4 /* TabBarController.swift */,
 				5C07AEEE205BF7B000D961DE /* MyFriends.swift */,
 				5C07AEE8205B2D9B00D961DE /* FriendRequests.swift */,
@@ -203,6 +193,40 @@
 				5C07AEEC205BDF9D00D961DE /* TableViewCells */,
 			);
 			path = FriendsHandler;
+			sourceTree = "<group>";
+		};
+		5C8BE7A62077A3F40075E1E4 /* EventHandler */ = {
+			isa = PBXGroup;
+			children = (
+				5CB11FCF206821A8006D3FB5 /* Event.swift */,
+				5C9A4E732052B89A0037A004 /* EventList.swift */,
+				5CB11FD120683437006D3FB5 /* EventListCell.swift */,
+				5C8BE7A82077A4F60075E1E4 /* EventPopUp */,
+			);
+			path = EventHandler;
+			sourceTree = "<group>";
+		};
+		5C8BE7A72077A49E0075E1E4 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5C9A4E6F2052B6890037A004 /* viewExtension.swift */,
+				5C48149A207104F8008D8398 /* buttonExtension.swift */,
+				5CB1201520692489006D3FB5 /* RoundedImage.swift */,
+				5C8BE79C207622170075E1E4 /* ViewControllerExtensions.swift */,
+				5C9A4E75205558DB0037A004 /* DesignableX */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		5C8BE7A82077A4F60075E1E4 /* EventPopUp */ = {
+			isa = PBXGroup;
+			children = (
+				5CB11FCD2067EB96006D3FB5 /* EventPopUP.swift */,
+				5CB1201B206A9C6E006D3FB5 /* InvitedFriendsCell.swift */,
+				5C4814A22073DF41008D8398 /* MessageCell.swift */,
+				5C48149E2073A67E008D8398 /* Messages.swift */,
+			);
+			path = EventPopUp;
 			sourceTree = "<group>";
 		};
 		5C9A4E75205558DB0037A004 /* DesignableX */ = {

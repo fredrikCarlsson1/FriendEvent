@@ -2207,15 +2207,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="eventListCell" editingAccessoryType="disclosureIndicator" rowHeight="55" id="zfl-uc-Y0c" customClass="EventListCell" customModule="FriendEvent" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="375" height="55"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="left" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="eventListCell" editingAccessoryType="disclosureIndicator" rowHeight="70" id="zfl-uc-Y0c" customClass="EventListCell" customModule="FriendEvent" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="375" height="70"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="zfl-uc-Y0c" id="A1n-IX-wkl">
-                                    <rect key="frame" x="0.0" y="0.0" width="341" height="54.666666666666664"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="341" height="69.666666666666671"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Labelwdwda" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xbl-fl-nPv">
-                                            <rect key="frame" x="66" y="13" width="85.666666666666686" height="29"/>
+                                            <rect key="frame" x="66" y="13" width="85.666666666666686" height="44"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -2253,7 +2253,7 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pIz-wK-mcd">
+                                        <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pIz-wK-mcd">
                                             <rect key="frame" x="0.0" y="0.0" width="22" height="22"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chat (4)" translatesAutoresizingMaskIntoConstraints="NO" id="uxb-fJ-e6w">
@@ -2300,6 +2300,7 @@
                                         <constraint firstAttribute="bottomMargin" secondItem="Xbl-fl-nPv" secondAttribute="bottom" constant="2" id="z8B-RG-dj4"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <connections>
                                     <outlet property="badgeLabel" destination="5Ad-LA-zOv" id="vWX-3R-xt3"/>
                                     <outlet property="badgeView" destination="pIz-wK-mcd" id="dNR-Qy-RyJ"/>

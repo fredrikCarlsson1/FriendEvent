@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import MapKit
 import AVFoundation
+import Alamofire
 
 class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITextFieldDelegate {
     
@@ -420,7 +421,14 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         
     }
     
+    
+    
     @IBAction func guestBookViewButton(_ sender: UIButton) {
+        
+   //   Tell firebase that current user read latest guestbook post
+    Database.database().reference().child("Events").child((event?.eventReference)!).child("invitedFriends").child(CURRENT_USER_ID).updateChildValues(["newTextMessage" : false])
+        
+        
         if messageArray.count != 0{
         let indexPath = IndexPath(row: messageArray.count-1, section: 0)
         self.guestbookCollectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
@@ -466,9 +474,59 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         
     }
     
+    // MARK: - SEND PUSH NOTIFICATIONS
+    func sendPushNotification(key: String){
+        //        Database.database().reference().child("users").observeSingleEvent(of: .value) { (snapshot) in
+        //            guard let dictionary = snapshot.value as? [String:Any] else {return}
+        //
+        //            dictionary.forEach({ (key, value) in
+        //
+        guard let uid = Auth.auth().currentUser?.uid else {return}
+        if (key != uid){
+            let ref = Database.database().reference().child("messages").child(uid)
+            let messageText = "\(key) invited you to a new event!"
+            
+            let value = ["message": messageText, "fromDevice":AppDelegate.DEVICEID, "fromID":uid, "toID": key] as [String:Any]
+            
+            ref.updateChildValues(value)
+            
+            self.fetchMessage(toID: key)
+        }
+        //            })
+        //        }
+    }
+    
+    func fetchMessage(toID: String){
+        Database.database().reference().child("users").child(toID).observeSingleEvent(of: .value) { (snapshot) in
+            guard let dictionary = snapshot.value as? [String:Any] else {return}
+            let fromDevice = dictionary["fromDevice"] as! String
+            self.setUpPushNotification(fromDevice: fromDevice)
+            
+        }
+    }
+    
+    func setUpPushNotification(fromDevice: String){
+        let message = "\("XXX") wrote a message in the guestbook!"
+        
+        let title = "Quick Inviter"
+        let body = message
+        let toDeviceID = fromDevice
+        var headers: HTTPHeaders =   HTTPHeaders()
+        
+        headers = ["Content-Type":"application/json", "Authorization":"key=\(AppDelegate.SERVERKEY)"]
+        
+        let notification = ["to":"\(toDeviceID)", "notification":["body":body, "title":title, "badge":1, "sound":"default"]] as [String : Any]
+        
+        Alamofire.request(AppDelegate.NOTIFICATION_URL as URLConvertible, method: .post as HTTPMethod, parameters: notification, encoding: JSONEncoding.default, headers: headers).responseJSON { (response) in
+            print(response)
+        }
+    }
+    
     
     
     @IBOutlet weak var sendMessageTextField: UITextFieldX!
+    
+    
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         sendMessage()
@@ -479,7 +537,17 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     @IBAction func sendMessage(_ sender: UIButton) {
         scrollDownToBottom()
         sendMessage()
+        for friend in (event?.invitedFriends)!{
+            let _ = friend.map({ (ID, value) -> () in
+                if (ID != CURRENT_USER_ID) {
+                self.sendPushNotification(key: ID)
+                Database.database().reference().child("Events").child((event?.eventReference)!).child("invitedFriends").child(ID).updateChildValues(["newTextMessage" : true])
+                }
+            })
+        }
     }
+    
+    
     
     func sendMessage(){
         let ref = Database.database().reference().child("Events").child((event?.eventReference)!).child("guestBook")
@@ -528,7 +596,35 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     
     var messageArray = [Messages]()
     
+    
+    
+    
+    
+    
+    
+    
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

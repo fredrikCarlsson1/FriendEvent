@@ -24,10 +24,15 @@ class EventList: UITableViewController {
         return USER_REF.child("\(id)")
     }
     
+    var CURRENT_USER_ID: String {
+        let id = Auth.auth().currentUser!.uid
+        return id
+    }
+    
     var CURRENT_USER_EVENTS_REF: DatabaseReference {
         return CURRENT_USER_REF.child("Events")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -36,28 +41,26 @@ class EventList: UITableViewController {
         super.viewDidAppear(animated)
         eventObserver()
     }
-
-
+    
+    
     func eventObserver() {
         CURRENT_USER_EVENTS_REF.observe(DataEventType.value, with: { (snapshot) in
             self.eventList.removeAll()
             for child in snapshot.children.allObjects as! [DataSnapshot] {
                 let id = child.key
                 let eventID = child.childSnapshot(forPath: "eventID").value as! String
-//                let hasBeenRead = let eventID = child.childSnapshot(forPath: "hasBeenRead").value as! String
-                
-                
+                let hasBeenRead =  child.childSnapshot(forPath: "hasBeenRead").value as! Bool
                 
                 self.getEvent(eventID, completion: { (event) in
                     event.eventId = id
                     event.eventReference = eventID
-                    
+                    event.hasBeenRead = hasBeenRead
                     self.eventList.append(event)
                     self.eventList.sort(by: {$1.time > $0.time})
                     self.eventTableView.reloadData()
                 })
             }
-           
+            
             if snapshot.childrenCount == 0 {
                 self.eventTableView.reloadData()
             }
@@ -77,36 +80,41 @@ class EventList: UITableViewController {
             let type =  snapshot.childSnapshot(forPath: "eventType").value as! String
             let host = snapshot.childSnapshot(forPath: "host").value as! String
             var invitedFriends = [[String:[String:String]]]()
+            var newTextMessage = Bool()
             for child in snapshot.childSnapshot(forPath: "invitedFriends").children {
                 let snap = child as! DataSnapshot
                 let key = snap.key
                 let nameValue = snap.childSnapshot(forPath: "name").value as! String
                 let answerValue = snap.childSnapshot(forPath: "answer").value as! String
                 let invitedFriend = [key:[nameValue:answerValue]]
-              
+                
+                if key == self.CURRENT_USER_ID {
+                    newTextMessage = snap.childSnapshot(forPath: "newTextMessage").value as! Bool
+                }
                 invitedFriends.append(invitedFriend)
             }
             
-            completion(Event(title: title, time: time, description: description, soundRef: soundRef, imageRef: imageRef, latitude: latitude, longitude: longitude, type: type, invitedFriends: invitedFriends, host: host))
+            
+            completion(Event(title: title, time: time, description: description, soundRef: soundRef, imageRef: imageRef, latitude: latitude, longitude: longitude, type: type, invitedFriends: invitedFriends, host: host, newTextMessage: newTextMessage))
         })
     }
     
     
     
-
-
+    
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
     // MARK: - Table view data source
-
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return eventList.count
@@ -114,6 +122,16 @@ class EventList: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: EventListCell = tableView.dequeueReusableCell(withIdentifier: "eventListCell", for: indexPath) as! EventListCell
+        
+        let event = eventList[indexPath.row]
+        
+        if event.hasBeenRead == false{
+            cell.eventTitle.font = UIFont.boldSystemFont(ofSize: 16)
+        }
+        if event.hasUnreadTextMessage == true {
+            cell.badgeView.isHidden = false
+            cell.badgeLabel.text = "+1"
+        }
         
         let index = eventList[indexPath.row].time.index(of: "&")!
         let dateStr = eventList[indexPath.row].time[..<index]
@@ -136,7 +154,7 @@ class EventList: UITableViewController {
         default:
             cell.eventTypeImage.image = UIImage(named: "question-mark_small")
         }
-
+        
         
         
         
@@ -155,14 +173,14 @@ class EventList: UITableViewController {
                 
                 if let id = eventList[selectedRow].eventId{
                     destination.eventID = id
-                  
+                    
                 }
             }
-           
+            
             
         }
     }
-
     
-
+    
+    
 }
