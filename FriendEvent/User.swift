@@ -11,12 +11,13 @@ import Firebase
 
 class User {
     
-    var name: String?
+    var name: String
     var email: String
     var id: String
     
-    init(email: String, userID: String) {
+    init(email: String, userID: String, name: String) {
         self.email = email
         self.id = userID
+        self.name = name 
     }
 }

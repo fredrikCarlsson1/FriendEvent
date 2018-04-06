@@ -38,7 +38,7 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         addRequestObserver ()
-        print(requestList.count)
+
         
         // Do any additional setup after loading the view.
     }
@@ -48,7 +48,8 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
         USER_REF.child(userID).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
             let email = snapshot.childSnapshot(forPath: "Email").value as! String
             let id = snapshot.key
-            completion(User(email: email, userID: id))
+            let name = snapshot.childSnapshot(forPath: "username").value as! String
+            completion(User(email: email, userID: id, name: name))
         })
     }
     
@@ -59,13 +60,14 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
                 let id = child.key
 
                 self.getUser(id, completion: { (user) in
-
                     self.requestList.append(user)
+                    self.tabBarItem.badgeValue = String(self.requestList.count)
                     self.tableView.reloadData()
                 })
             }
             // If there are no children, run completion here instead
             if snapshot.childrenCount == 0 {
+                self.tabBarItem.badgeValue = nil
                 self.tableView.reloadData()
             }
         })

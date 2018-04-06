@@ -12,18 +12,30 @@ class Event {
     let title: String
     let description: String?
     let time: String
-    //let place: String
+    let latitude: Double
+    let longitude: Double
+    let type: String
     let imageRef: String?
     let soundRef: String?
-    //let participants: [User]?
+    var eventId: String?
+    var eventReference: String?
+    var invitedFriends: [[String:[String:String]]]
+    let host: String
+    var hasUnreadTextMessage: Bool?
+    var eventIsUnread: Bool?
     
-    init(title: String, time: String, description: String?, soundRef: String?, imageRef: String? ){
+    
+    init(title: String, time: String, description: String?, soundRef: String?, imageRef: String?, latitude: Double, longitude: Double, type: String, invitedFriends: [[String:[String:String]]], host: String){
         self.title = title
         self.time = time
-       // self.place = place
         self.description = description
         self.soundRef = soundRef
         self.imageRef = imageRef
+        self.type = type
+        self.latitude = latitude
+        self.longitude = longitude
+        self.invitedFriends = invitedFriends
+        self.host = host
         
     }
     

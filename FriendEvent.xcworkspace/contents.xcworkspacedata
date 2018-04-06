@@ -2,15 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/TitleCell.swift">
-   </FileRef>
-   <FileRef
-      location = "group:/Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/FriendSystem.swift">
-   </FileRef>
-   <FileRef
-      location = "group:/Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/Friends.swift">
-   </FileRef>
-   <FileRef
       location = "group:FriendEvent.xcodeproj">
    </FileRef>
    <FileRef

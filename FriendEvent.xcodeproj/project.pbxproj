@@ -11,7 +11,6 @@
 		5C03F9BF204D5D55000DFD08 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F9BE204D5D55000DFD08 /* StartView.swift */; };
 		5C03F9C2204D5D55000DFD08 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C03F9C0204D5D55000DFD08 /* Main.storyboard */; };
 		5C03F9C5204D5D55000DFD08 /* FriendEvent.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F9C3204D5D55000DFD08 /* FriendEvent.xcdatamodeld */; };
-		5C03F9C7204D5D55000DFD08 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C03F9C6204D5D55000DFD08 /* Assets.xcassets */; };
 		5C03F9CA204D5D55000DFD08 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C03F9C8204D5D55000DFD08 /* LaunchScreen.storyboard */; };
 		5C03F9D2204D682C000DFD08 /* AddPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F9D1204D682C000DFD08 /* AddPin.swift */; };
 		5C07AEB12057082600D961DE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5C07AEB02057082600D961DE /* GoogleService-Info.plist */; };
@@ -24,7 +23,13 @@
 		5C07AEE9205B2D9B00D961DE /* FriendRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEE8205B2D9B00D961DE /* FriendRequests.swift */; };
 		5C07AEEB205BDF8100D961DE /* FriendRequestTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEEA205BDF8100D961DE /* FriendRequestTableCell.swift */; };
 		5C07AEEF205BF7B000D961DE /* MyFriends.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AEEE205BF7B000D961DE /* MyFriends.swift */; };
+		5C48149B207104F8008D8398 /* buttonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C48149A207104F8008D8398 /* buttonExtension.swift */; };
+		5C48149F2073A67E008D8398 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C48149E2073A67E008D8398 /* Messages.swift */; };
+		5C4814A32073DF41008D8398 /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4814A22073DF41008D8398 /* MessageCell.swift */; };
 		5C549A8B20626E9600B65096 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C549A8A20626E9600B65096 /* CanvasView.swift */; };
+		5C8BE79D207622170075E1E4 /* ViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8BE79C207622170075E1E4 /* ViewControllerExtensions.swift */; };
+		5C8BE7A3207696B20075E1E4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C8BE7A2207696B10075E1E4 /* Assets.xcassets */; };
+		5C8BE7A52076C75B0075E1E4 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8BE7A42076C75B0075E1E4 /* TabBarController.swift */; };
 		5C9A4E702052B6890037A004 /* viewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E6F2052B6890037A004 /* viewExtension.swift */; };
 		5C9A4E722052B86A0037A004 /* NewEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E712052B86A0037A004 /* NewEvent.swift */; };
 		5C9A4E742052B89A0037A004 /* EventList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A4E732052B89A0037A004 /* EventList.swift */; };
@@ -42,6 +47,8 @@
 		5CB11FCE2067EB96006D3FB5 /* EventPopUP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB11FCD2067EB96006D3FB5 /* EventPopUP.swift */; };
 		5CB11FD0206821A8006D3FB5 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB11FCF206821A8006D3FB5 /* Event.swift */; };
 		5CB11FD220683437006D3FB5 /* EventListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB11FD120683437006D3FB5 /* EventListCell.swift */; };
+		5CB1201620692489006D3FB5 /* RoundedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB1201520692489006D3FB5 /* RoundedImage.swift */; };
+		5CB1201C206A9C6F006D3FB5 /* InvitedFriendsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB1201B206A9C6E006D3FB5 /* InvitedFriendsCell.swift */; };
 		5CFB4F03205FDACD00D3C8F0 /* ReusableButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */; };
 		5CFB4F072060608B00D3C8F0 /* TitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFB4F062060608B00D3C8F0 /* TitleCell.swift */; };
 		E99C010F6950A1339C052063 /* Pods_FriendEvent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C766A0E7077FE80E12970193 /* Pods_FriendEvent.framework */; };
@@ -54,7 +61,6 @@
 		5C03F9BE204D5D55000DFD08 /* StartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
 		5C03F9C1204D5D55000DFD08 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5C03F9C4204D5D55000DFD08 /* FriendEvent.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FriendEvent.xcdatamodel; sourceTree = "<group>"; };
-		5C03F9C6204D5D55000DFD08 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5C03F9C9204D5D55000DFD08 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5C03F9CB204D5D55000DFD08 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5C03F9D1204D682C000DFD08 /* AddPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPin.swift; sourceTree = "<group>"; };
@@ -69,7 +75,13 @@
 		5C07AEE8205B2D9B00D961DE /* FriendRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequests.swift; sourceTree = "<group>"; };
 		5C07AEEA205BDF8100D961DE /* FriendRequestTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequestTableCell.swift; sourceTree = "<group>"; };
 		5C07AEEE205BF7B000D961DE /* MyFriends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFriends.swift; sourceTree = "<group>"; };
+		5C48149A207104F8008D8398 /* buttonExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = buttonExtension.swift; sourceTree = "<group>"; };
+		5C48149E2073A67E008D8398 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
+		5C4814A22073DF41008D8398 /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MessageCell.swift; path = /Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/MessageCell.swift; sourceTree = "<absolute>"; };
 		5C549A8A20626E9600B65096 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
+		5C8BE79C207622170075E1E4 /* ViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerExtensions.swift; sourceTree = "<group>"; };
+		5C8BE7A2207696B10075E1E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5C8BE7A42076C75B0075E1E4 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		5C9A4E6F2052B6890037A004 /* viewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = viewExtension.swift; sourceTree = "<group>"; };
 		5C9A4E712052B86A0037A004 /* NewEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEvent.swift; sourceTree = "<group>"; };
 		5C9A4E732052B89A0037A004 /* EventList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventList.swift; sourceTree = "<group>"; };
@@ -87,6 +99,8 @@
 		5CB11FCD2067EB96006D3FB5 /* EventPopUP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPopUP.swift; sourceTree = "<group>"; };
 		5CB11FCF206821A8006D3FB5 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		5CB11FD120683437006D3FB5 /* EventListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListCell.swift; sourceTree = "<group>"; };
+		5CB1201520692489006D3FB5 /* RoundedImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedImage.swift; sourceTree = "<group>"; };
+		5CB1201B206A9C6E006D3FB5 /* InvitedFriendsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InvitedFriendsCell.swift; path = /Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/InvitedFriendsCell.swift; sourceTree = "<absolute>"; };
 		5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableButtonCell.swift; sourceTree = "<group>"; };
 		5CFB4F062060608B00D3C8F0 /* TitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TitleCell.swift; path = /Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/TitleCell.swift; sourceTree = "<absolute>"; };
 		973445D1DA03ADEAB336D8C4 /* Pods-FriendEvent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FriendEvent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FriendEvent/Pods-FriendEvent.debug.xcconfig"; sourceTree = "<group>"; };
@@ -136,24 +150,30 @@
 			children = (
 				5C07AEB22057232F00D961DE /* FriendEvent.entitlements */,
 				5C03F9BC204D5D55000DFD08 /* AppDelegate.swift */,
+				5C07AEB320580EC000D961DE /* LogIn.swift */,
 				5C03F9BE204D5D55000DFD08 /* StartView.swift */,
 				5C9A4E712052B86A0037A004 /* NewEvent.swift */,
 				5CB11FCB2064F821006D3FB5 /* UserInvitation.swift */,
 				5C549A8A20626E9600B65096 /* CanvasView.swift */,
 				5C9A4E732052B89A0037A004 /* EventList.swift */,
+				5CB11FD120683437006D3FB5 /* EventListCell.swift */,
 				5CB11FCF206821A8006D3FB5 /* Event.swift */,
 				5CFB4F062060608B00D3C8F0 /* TitleCell.swift */,
-				5C07AEB320580EC000D961DE /* LogIn.swift */,
+				5CB1201B206A9C6E006D3FB5 /* InvitedFriendsCell.swift */,
 				5C03F9C0204D5D55000DFD08 /* Main.storyboard */,
-				5CB11FD120683437006D3FB5 /* EventListCell.swift */,
+				5C4814A22073DF41008D8398 /* MessageCell.swift */,
+				5C48149E2073A67E008D8398 /* Messages.swift */,
 				5CB11FCD2067EB96006D3FB5 /* EventPopUP.swift */,
 				5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */,
 				5C03F9D1204D682C000DFD08 /* AddPin.swift */,
 				5C07AEE2205AB81600D961DE /* User.swift */,
+				5C8BE7A2207696B10075E1E4 /* Assets.xcassets */,
 				5C07AEED205BDFC900D961DE /* FriendsHandler */,
-				5C03F9C6204D5D55000DFD08 /* Assets.xcassets */,
 				5C03F9C8204D5D55000DFD08 /* LaunchScreen.storyboard */,
 				5C03F9CB204D5D55000DFD08 /* Info.plist */,
+				5C8BE79C207622170075E1E4 /* ViewControllerExtensions.swift */,
+				5CB1201520692489006D3FB5 /* RoundedImage.swift */,
+				5C48149A207104F8008D8398 /* buttonExtension.swift */,
 				5C9A4E6F2052B6890037A004 /* viewExtension.swift */,
 				5C03F9C3204D5D55000DFD08 /* FriendEvent.xcdatamodeld */,
 				5C07AEB02057082600D961DE /* GoogleService-Info.plist */,
@@ -174,6 +194,7 @@
 		5C07AEED205BDFC900D961DE /* FriendsHandler */ = {
 			isa = PBXGroup;
 			children = (
+				5C8BE7A42076C75B0075E1E4 /* TabBarController.swift */,
 				5C07AEEE205BF7B000D961DE /* MyFriends.swift */,
 				5C07AEE8205B2D9B00D961DE /* FriendRequests.swift */,
 				5C07AEE4205ABF3C00D961DE /* FindFriends.swift */,
@@ -279,7 +300,7 @@
 			files = (
 				5C03F9CA204D5D55000DFD08 /* LaunchScreen.storyboard in Resources */,
 				5C07AEB12057082600D961DE /* GoogleService-Info.plist in Resources */,
-				5C03F9C7204D5D55000DFD08 /* Assets.xcassets in Resources */,
+				5C8BE7A3207696B20075E1E4 /* Assets.xcassets in Resources */,
 				5C03F9C2204D5D55000DFD08 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -363,15 +384,19 @@
 				5CB11FCE2067EB96006D3FB5 /* EventPopUP.swift in Sources */,
 				5C9A4E742052B89A0037A004 /* EventList.swift in Sources */,
 				5C9A4E722052B86A0037A004 /* NewEvent.swift in Sources */,
+				5C8BE79D207622170075E1E4 /* ViewControllerExtensions.swift in Sources */,
+				5CB1201620692489006D3FB5 /* RoundedImage.swift in Sources */,
 				5C07AEE1205AB24800D961DE /* Friends.swift in Sources */,
 				5C9A4E89205558DB0037A004 /* UISliderX.swift in Sources */,
 				5C07AEDF205AB0E900D961DE /* FriendSystem.swift in Sources */,
+				5C48149B207104F8008D8398 /* buttonExtension.swift in Sources */,
 				5CB11FD0206821A8006D3FB5 /* Event.swift in Sources */,
 				5C9A4E82205558DB0037A004 /* UIButtonX.swift in Sources */,
 				5CB11FD220683437006D3FB5 /* EventListCell.swift in Sources */,
 				5C07AEB420580EC000D961DE /* LogIn.swift in Sources */,
 				5CFB4F072060608B00D3C8F0 /* TitleCell.swift in Sources */,
 				5C9A4E83205558DB0037A004 /* UILabelX.swift in Sources */,
+				5C48149F2073A67E008D8398 /* Messages.swift in Sources */,
 				5C03F9BF204D5D55000DFD08 /* StartView.swift in Sources */,
 				5C9A4E84205558DB0037A004 /* UIViewAnchorPoint.swift in Sources */,
 				5C07AEE9205B2D9B00D961DE /* FriendRequests.swift in Sources */,
@@ -384,7 +409,10 @@
 				5CFB4F03205FDACD00D3C8F0 /* ReusableButtonCell.swift in Sources */,
 				5C9A4E85205558DB0037A004 /* UIViewControllerX.swift in Sources */,
 				5C9A4E702052B6890037A004 /* viewExtension.swift in Sources */,
+				5C4814A32073DF41008D8398 /* MessageCell.swift in Sources */,
 				5C07AEE7205AF7AA00D961DE /* TableCell.swift in Sources */,
+				5CB1201C206A9C6F006D3FB5 /* InvitedFriendsCell.swift in Sources */,
+				5C8BE7A52076C75B0075E1E4 /* TabBarController.swift in Sources */,
 				5C03F9D2204D682C000DFD08 /* AddPin.swift in Sources */,
 				5C9A4E81205558DB0037A004 /* UITextFieldX.swift in Sources */,
 				5C9A4E80205558DB0037A004 /* UIViewXRadialGradient.swift in Sources */,

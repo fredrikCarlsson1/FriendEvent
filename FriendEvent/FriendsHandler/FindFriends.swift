@@ -26,10 +26,15 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
         let id = Auth.auth().currentUser!.uid
         return id
     }
+    
+    var CURRENT_USER_FRIENDS_REF: DatabaseReference {
+        return CURRENT_USER_REF.child("friends")
+    }
     var databaseRef = Database.database().reference()
     
     var userArray = [User]()
     var filtredUsers = [User]()
+    var friendsIDsList = [String]()
     
     
     
@@ -39,6 +44,7 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        addFriendObserver()
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
@@ -59,14 +65,16 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
     func fetchUsers(){
         
         Database.database().reference().child("users").observe(.childAdded, with: { (snapshot) in
-            let email = snapshot.childSnapshot(forPath: "Email")
+            let email = snapshot.childSnapshot(forPath: "Email").value as! String
             let id = snapshot.key as String
+            let name = snapshot.childSnapshot(forPath: "username").value as! String
+            let user = User(email: email, userID: id, name: name)
             
-            let user = User(email: (email.value as? String)!, userID: id)
-            self.userArray.append(user)
-            
-            self.userTableView.reloadData()
-            
+            if (self.CURRENT_USER_ID != id){
+                
+                self.userArray.append(user)
+                self.userTableView.reloadData()
+            }
         }, withCancel: nil)
     }
     
@@ -107,6 +115,11 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
         
         cell.button.tag = indexPath.row
         
+        for friendsID in friendsIDsList{
+            if user.id == friendsID{
+               cell.button.isHidden = true
+            }
+        }
         cell.button.addTarget(self, action: #selector(pressButton(_:)), for: .touchUpInside)
         cell.textLabel?.text = user.email
         
@@ -124,51 +137,20 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
         }
     }
     
-    
-    /*
-     // Override to support conditional editing of the table view.
-     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the specified item to be editable.
-     return true
-     }
-     */
-    
-    /*
-     // Override to support editing the table view.
-     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-     if editingStyle == .delete {
-     // Delete the row from the data source
-     tableView.deleteRows(at: [indexPath], with: .fade)
-     } else if editingStyle == .insert {
-     // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-     }
-     }
-     */
-    
-    /*
-     // Override to support rearranging the table view.
-     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-     
-     }
-     */
-    
-    /*
-     // Override to support conditional rearranging of the table view.
-     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the item to be re-orderable.
-     return true
-     }
-     */
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
+    func addFriendObserver() {
+        CURRENT_USER_FRIENDS_REF.observe(DataEventType.value, with: { (snapshot) in
+            self.friendsIDsList.removeAll()
+            for child in snapshot.children.allObjects as! [DataSnapshot] {
+                let id = child.key
+                self.friendsIDsList.append(id)
+                self.userTableView.reloadData()
+                
+            }
+            // If there are no children, run completion here instead
+            if snapshot.childrenCount == 0 {
+            }
+        })
+    }
     
     func filtereContent(searchText: String){
         self.filtredUsers = self.userArray.filter{ user in
@@ -177,6 +159,7 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
             
         }
         userTableView.reloadData()
+       
     }
     
     func updateSearchResults(for searchController: UISearchController) {

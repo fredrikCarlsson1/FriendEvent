@@ -18,14 +18,47 @@ import UserNotifications
 import AVFoundation
 
 
-class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, MessagingDelegate, UICollectionViewDelegate, UICollectionViewDataSource, AVAudioRecorderDelegate  {
+class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, MessagingDelegate, UICollectionViewDelegate, UICollectionViewDataSource, AVAudioRecorderDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UITextViewDelegate  {
     
-
+    let PURPLE_COLOR = UIColor(hexString: "#8F6886")
+    
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return pickerWheelSelections.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return pickerWheelSelections[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        typeOfEventSelectorOutlet.setTitle(pickerWheelSelections[row], for: .normal)
+        self.typeOfEvent = pickerWheelSelections[row]
+        switch typeOfEvent! {
+        case "Öl":
+            self.imageView.image = UIImage(named: "beer")
+        case "Vin":
+            self.imageView.image = UIImage(named: "wine")
+        case "Bio":
+            self.imageView.image = UIImage(named: "popcorn")
+        case "Middag":
+            self.imageView.image = UIImage(named: "dinner")
+        default:
+            self.imageView.image = UIImage(named: "letter")
+        }
+    }
+    
+    var typeOfEvent: String?
+    
     
     var storageReference: StorageReference{
         return Storage.storage().reference().child("storage")
     }
-
+    
     //MARK: MAP VARIBLES
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var myMapView: MKMapView!
@@ -49,6 +82,20 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     }
     var checkMarks = [UIImageView]()
     
+    var CURRENT_USER_EMAIL: String {
+        let email = Auth.auth().currentUser!.email
+        return email!
+    }
+    
+    var CURRENT_USERNAME: String?
+    
+    func setCurrentUserName (){
+        CURRENT_USER_REF.observeSingleEvent(of: .value) { (snapshot) in
+            let name = snapshot.childSnapshot(forPath: "username").value as! String
+            self.CURRENT_USERNAME = name
+        }
+    }
+    
     //MARK: POPUP VARIBLES
     @IBOutlet weak var popUpView: UIViewX!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -57,7 +104,14 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     @IBOutlet weak var blurView: UIVisualEffectView!
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var typeOfEventSelectorOutlet: UIButton!
-    @IBOutlet weak var viewBehindPickerWheels: UIDatePicker!
+    
+    @IBOutlet weak var viewBehindPickerWheel: UIView!
+    @IBOutlet weak var pickerWheel: UIPickerView!
+    @IBOutlet weak var imageView: UIImageViewX!
+    @IBOutlet weak var backgroundButtonOutlet: UIButton!
+    
+    @IBOutlet weak var textFieldPlaceholder: UILabel!
+    
     
     //MARK: DRAWING VARIBLES
     @IBOutlet weak var drawingView: UIView!
@@ -90,15 +144,20 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     
     
     //MARK: OTHER VARIBLES
-    var dateTime: String = ""
+    var dateTime: String?
     var timeTime: String?
-    var downloadedImage = UIImageView()
+    var totalTime = ""
     
-
+    var pickerWheelSelections = [String]()
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setCurrentUserName()
+        pickerWheelSelections = ["– Select type of event –", "Vin", "Middag", "Öl", "Bio"]
         
+        imageView.roundCorners(corners: [.topRight, .topLeft], radius: 15)
         addFriendObserver()
         searchBar.delegate = self
         popUpView.alpha = 0
@@ -106,9 +165,15 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         micView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
         
         
+        textFieldPlaceholder.isHidden = !eventDescriptionView.text.isEmpty
+        eventDescriptionView.delegate = self
         firstCollectionView.delegate = self
         firstCollectionView.dataSource = self
         
+    }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        textFieldPlaceholder.isHidden = true
     }
     
     
@@ -128,10 +193,12 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         view?.addSubview(button)
         return view
     }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
         self.datePickerOutlet.isHidden = true
-        self.viewBehindPickerWheels.isHidden = true
+        self.pickerWheel.isHidden = true
+        viewBehindPickerWheel.alpha = 0
         
         if let touch = touches.first{
             self.start = touch.location(in: canvas)
@@ -153,6 +220,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         setLocation()
         firstCollectionView.reloadData()
         popUpView.transform = CGAffineTransform(scaleX: 0.4, y: 1.8)
+        backgroundButtonOutlet.isHidden = false
         blurView.isHidden = false
         UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 0, options: .allowUserInteraction, animations: {
             self.popUpView.transform = .identity
@@ -224,15 +292,19 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
                 case 0:
                     let cell1 =  collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as! ReusableButtonCell
                     
-                        cell1.dateLabel.text = dateTime
-                    
+                    if let time = dateTime{
+                        cell1.dateLabel.text = time
+                    }
                     if let time = timeTime{
                         cell1.dateUnderLabel.text = time
                     }
                     
                     return cell1
                 case 1:
-                    return collectionView.dequeueReusableCell(withReuseIdentifier: "cell3", for: indexPath)
+                    let cell3 =  collectionView.dequeueReusableCell(withReuseIdentifier: "cell3", for: indexPath) as! ReusableButtonCell
+                    cell3.micButtonOutlet.imageView?.contentMode = .scaleAspectFit
+                    
+                    return cell3
                 case 2:
                     let cell2 =  collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as! ReusableButtonCell
                     cell2.locationTitleLabel.text = self.place
@@ -268,7 +340,9 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
                     
                     return cell2
                 case 3:
-                    return collectionView.dequeueReusableCell(withReuseIdentifier: "cell4", for: indexPath)
+                    let cell4 = collectionView.dequeueReusableCell(withReuseIdentifier: "cell4", for: indexPath) as! ReusableButtonCell
+                    cell4.drawButtonOutlet.imageView?.contentMode = .scaleAspectFit
+                    return cell4
                 default:
                     return collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath)
                 }
@@ -282,7 +356,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         checkMark.frame = CGRect(x: cell.button.frame.width - 15, y: 10, width: 10, height: 10)
         checkMark.alpha = 1
         checkMarks.append(checkMark)
-        cell.label.text = friendList[indexPath.row].email
+        cell.label.text = friendList[indexPath.row].name
         cell.button.addTarget(self, action: #selector(selectFriend(_:)), for: .touchUpInside)
         return cell
         
@@ -366,20 +440,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
             print(error ?? "NO error")
         })
         uploadTask.resume()
-        print("DDDDDDDDDOOOOOOOOONE")
-    }
-    
-    func downloadImage(){
-        let downloadImageRef = storageReference.child("storage")
         
-        let downloadTask = downloadImageRef.getData(maxSize: 1024*1024*15) { (data, error) in
-            if let data = data {
-                let image = UIImage(data: data)
-                self.downloadedImage.image = image
-            }
-            print(error ?? "No ERROR")
-        }
-        downloadTask.resume()
     }
     
     
@@ -397,17 +458,15 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     
     
     
-    
-    
     //MARK: ADD FRIENDS TO EVENT FUNCTIONS
     @objc func selectFriend(_ button : UIButton){
         if(button.backgroundColor == UIColor.white){
-            button.backgroundColor = UIColor.cyan
+            button.backgroundColor = PURPLE_COLOR
             button.addSubview(checkMarks[button.tag])
             self.selectedFriends.append(friendList[button.tag])
             checkMarks[button.tag].alpha = 1
         }
-        else if(button.backgroundColor == UIColor.cyan){
+        else if(button.backgroundColor == PURPLE_COLOR){
             button.backgroundColor = UIColor.white
             checkMarks[button.tag].alpha = 0
             var index = 0
@@ -439,7 +498,8 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         USER_REF.child(userID).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
             let email = snapshot.childSnapshot(forPath: "Email").value as! String
             let id = snapshot.key
-            completion(User(email: email, userID: id))
+            let name = snapshot.childSnapshot(forPath: "username").value as! String
+            completion(User(email: email, userID: id, name: name))
         })
     }
     
@@ -494,34 +554,62 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     
     
     //MARK: SEND INVITATION
-    func sendInvite(userID: String){
-        //        CURRENT_USER_REF.child("Event").child("Title").setValue(titleTextField.text)
-        //        USER_REF.child(userID).child("newEvent").setValue(true)
-        //        USER_REF.child(userID).child("Event").child("Title").setValue(titleTextField.text)
-        //        USER_REF.child(userID).child("Event").child("Title").child(titleTextField.text!).setValue("2e")
+    func sendInvite(){
+        let host = User(email: CURRENT_USER_EMAIL, userID: CURRENT_USER_ID, name: CURRENT_USERNAME!)
         
         if(titleTextField.text != ""){
-            print ("latitude \(Double((annotationLocation?.coordinate.latitude)!)), longitude: \(Double((annotationLocation?.coordinate.longitude)!))")
-            let position = ["latitude": Double((annotationLocation?.coordinate.latitude)!), "longitude": Double((annotationLocation?.coordinate.longitude)!)] as [String: Double]
-        let key = USER_REF.child(userID).child("posts").childByAutoId().key
-            let posts = ["sender": String(CURRENT_USER_ID), "title": titleTextField.text!, "description": self.eventDescriptionView.text, "time": String(dateTime), "imageRef": self.drawingReference ?? "0", "soundRef": self.soundRef ?? "0", "position": position ] as [String : Any]
-            
-        let childUpdates = ["/\(userID)/Events/\(key)/": posts]
-        USER_REF.updateChildValues(childUpdates)
-
-        sendMessage(key: userID)
-        }
-        else {
+            if(selectedFriends.count != 0){
+                if(totalTime != "") {
+                    let position = ["latitude": Double((annotationLocation?.coordinate.latitude)!), "longitude": Double((annotationLocation?.coordinate.longitude)!)] as [String: Double]
+                    let posts = ["sender": String(CURRENT_USER_ID), "title": titleTextField.text!, "description": self.eventDescriptionView.text, "time": String(totalTime), "imageRef": self.drawingReference ?? "0", "soundRef": self.soundRef ?? "0", "position": position, "eventType": typeOfEvent ?? "0"] as [String : Any]
+                    
+                    let eventID = "\(CURRENT_USER_ID)\(generateRandomNumber())\(generateRandomNumber())"
+                    let ref = Database.database().reference().child("Events").child(eventID)
+                    ref.updateChildValues(posts)
+                    
+                    if let hostUsername = CURRENT_USERNAME{
+                        let post2 = ["host": hostUsername]
+                        ref.updateChildValues(post2)
+                    }
+                    
+                    let key = USER_REF.child(CURRENT_USER_ID).child("posts").childByAutoId().key
+                    let childUpdates = ["/Events/\(key)/": ["eventID": eventID, "hasBeenRead": true]]
+                    CURRENT_USER_REF.updateChildValues(childUpdates)
+                    let host1 = ["name": String(host.name), "answer": "Comming"]
+                    ref.child("invitedFriends").child(CURRENT_USER_ID).updateChildValues(host1)
+                    
+                    for friend in selectedFriends{
+                        let post3 = ["name": String(friend.name), "answer": "TBA"]
+                        ref.child("invitedFriends").child(friend.id).updateChildValues(post3)
+                    }
+                    for friend in selectedFriends{
+                        sendEventRefToUser(eventRef: String(eventID), userID: friend.id)
+                    }
+                }
+                else {
+                    alert(title: "Missing information", message: "You need to select a date for your event")
+                }
+            }else {
+                alert(title: "Select friends to your event", message: "You need to select at least one guest to your event")
+            }
+        }else {
             displayAlert(title: "Missing event-title", message: "You need to enter the name of your event")
         }
+  
+    }
+    
+    func sendEventRefToUser(eventRef: String, userID: String){
+        let key = USER_REF.child(userID).child("posts").childByAutoId().key
+        let childUpdates = ["/\(userID)/Events/\(key)/": ["eventID": eventRef, "hasBeenRead": false]]
+        USER_REF.updateChildValues(childUpdates)
+        
+        sendMessage(key: userID)
     }
     
     @IBAction func sendInviteButton(_ sender: UIButton) {
         uploadDrawnImage()
         popUpView.alpha = 0
-        for friend in selectedFriends{
-            sendInvite(userID: friend.id)
-        }
+        sendInvite()
         self.blurView.isHidden = true
     }
     
@@ -529,7 +617,8 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     //MARK: SET DATE AND TIME ON EVENT FUNCTIONS
     @IBAction func selectDateButton(_ sender: UIButton) {
         datePickerOutlet.isHidden = false
-        viewBehindPickerWheels.isHidden = false
+        pickerWheel.isHidden = true
+        viewBehindPickerWheel.alpha = 1.0
     }
     
     @IBAction func datePicker(_ sender: UIDatePicker) {
@@ -544,6 +633,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         
         self.dateTime = "\(strDate)"
         self.timeTime = "\(strTime)"
+        self.totalTime = "\(strDate) &\(strTime)"
         firstCollectionView.reloadData()
         
     }
@@ -561,11 +651,8 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         if let searchText = searchBar.text{
             self.place = searchText
         }
-        getAddress()
         
-    }
-    func getAddress(){
-    
+        
     }
     
     
@@ -664,35 +751,6 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         
     }
     
-    @IBAction func downloadSoundButton(_ sender: UIButton) {
-        downloadSound(soundReference: "TBA")
-    }
-    
-    func downloadSound(soundReference: String){
-        
-        let pathString = "storage"
-        
-        let downloadSoundRef = storageReference.child(soundReference)
-        
-        let fileUrls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        
-        guard let fileUrl = fileUrls.first?.appendingPathComponent(pathString) else {
-            return
-        }
-        
-        let downloadTask = downloadSoundRef.write(toFile: fileUrl)
-        
-        downloadTask.observe(.success) { _ in
-            do {
-                self.player = try AVAudioPlayer(contentsOf: fileUrl)
-                self.player?.prepareToPlay()
-                self.player?.play()
-            } catch let error {
-                print(error.localizedDescription)
-            }
-        }
-    }
-    
     @IBAction func uploadSoundButton(_ sender: UIButton) {
         uploadSound()
     }
@@ -728,22 +786,27 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     
     
     //MARK: OTHER FUNCTIONS
-    
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if eventDescriptionView.textColor == UIColor.lightGray {
-            eventDescriptionView.text = nil
-            eventDescriptionView.textColor = UIColor.black
-        }
-    }
+
     
     func generateRandomNumber()->Int{
         let random = arc4random_uniform(1000000)
         return Int(random)
     }
-
+    
     
     @IBAction func typeOfEventSelector(_ sender: UIButton) {
+        pickerWheel.isHidden = false
+        datePickerOutlet.isHidden = true
+        self.viewBehindPickerWheel.alpha = 1
+        
     }
+    
+    @IBAction func backgroundButton(_ sender: UIButton) {
+        popUpView.alpha = 0
+        blurView.isHidden = true
+        backgroundButtonOutlet.isHidden = true
+    }
+    
     
     
 }

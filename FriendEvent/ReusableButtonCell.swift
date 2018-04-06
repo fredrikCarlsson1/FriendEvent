@@ -25,6 +25,12 @@ class ReusableButtonCell: UICollectionViewCell {
     @IBOutlet weak var locationTitleLabel: UILabel!
     @IBOutlet weak var locationDescriptionLabel: UILabel!
     
+    @IBOutlet weak var drawButtonOutlet: UIButtonX!
+    
+    @IBOutlet weak var micButtonOutlet: UIButtonX!
+    
+    
+    
 }
 
 

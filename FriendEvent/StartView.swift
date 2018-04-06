@@ -16,12 +16,51 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
     var dbReference: DatabaseReference?
     var dbHandler: DatabaseHandle?
     
+    @IBOutlet weak var newEventBadge: UIImageView!
+    @IBOutlet weak var newEventBadgeLabel: UILabel!
+    @IBOutlet weak var newFriendBadge: UIImageView!
+    @IBOutlet weak var newFriendBadgeLabel: UILabel!
+    
+    
+    /** The Firebase reference to the current user's friend request tree */
+    var CURRENT_USER_REQUESTS_REF: DatabaseReference {
+        return CURRENT_USER_REF.child("requests")
+    }
+    
+    var CURRENT_USER_EVENTS_REF: DatabaseReference {
+        return CURRENT_USER_REF.child("Events")
+    }
+    
     @IBOutlet weak var tableView: UITableView!
     
+    var friendCount = 0
+    var event: Event?
+    var usersEventID: String?
     
- 
-    var pin:AddPin?
+    
+    func addRequestObserver() {
+        self.friendCount = 0
+        CURRENT_USER_REQUESTS_REF.observe(DataEventType.value, with: { (snapshot) in
+            
+            for _ in snapshot.children.allObjects as! [DataSnapshot] {
+                self.friendCount += 1
+                if self.friendCount > 0 {
+                    self.newFriendBadge.isHidden = false
+                    self.newFriendBadgeLabel.isHidden = false
+                    self.newFriendBadgeLabel.text = String(self.friendCount)
+                }
 
+            }
+        })
+        if self.friendCount == 0 {
+            self.newFriendBadge.isHidden = true
+            self.newFriendBadgeLabel.isHidden = true
+        }
+        
+    }
+    
+    var pin:AddPin?
+    
     @IBOutlet weak var mapView: MKMapView!
     var friendList = [User]()
     
@@ -37,24 +76,15 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
     var CURRENT_USER_FRIENDS_REF: DatabaseReference {
         return CURRENT_USER_REF.child("friends")
     }
-
+    
     
     override func viewDidLoad() {
-        super.viewDidLoad()      
-        dbReference = Database.database().reference()
+        super.viewDidLoad()
         
+        dbReference = Database.database().reference()
+        eventObserver()
         addFriendObserver()
-
-
-        //retrive data
-//        dbHandler = dbReference?.child("name").observe(.childAdded, with: { (snapshot) in
-//             let name:String = (snapshot.value as? String)!
-//            print(name)
-//        })
-//        fetchUsers()
-       
-
-        navigationController?.navigationBar.dropShadow()
+        
         
         mapView.delegate = self
         mapView.dropShadow()
@@ -63,9 +93,15 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         gestureRecognizer.delegate = self as? UIGestureRecognizerDelegate
         mapView.addGestureRecognizer(gestureRecognizer)
-
+        
     }
-    /** The list of all friends of the current user. */
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        addRequestObserver()
+        
+    }
+    
     
     /** Adds a friend observer. The completion function will run every time this list changes, allowing you
      to update your UI. */
@@ -91,10 +127,94 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
         USER_REF.child(userID).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
             let email = snapshot.childSnapshot(forPath: "Email").value as! String
             let id = snapshot.key
-            completion(User(email: email, userID: id))
+            let name = snapshot.childSnapshot(forPath: "username").value as! String
+            completion(User(email: email, userID: id, name: name))
         })
     }
-
+    
+    func eventObserver() {
+        CURRENT_USER_EVENTS_REF.observe(DataEventType.value, with: { (snapshot) in
+            
+            for child in snapshot.children.allObjects as! [DataSnapshot] {
+                let id = child.key
+                let eventID = child.childSnapshot(forPath: "eventID").value as! String
+                if child.childSnapshot(forPath: "hasBeenRead").value as! Bool == false{
+                    self.getEvent(eventID, completion: { (event) in
+                        self.usersEventID = id
+                        event.eventReference = eventID
+                        
+                        self.event = event
+                        self.newEventBadgeLabel.isHidden = false
+                        self.newEventBadge.isHidden = false
+                        self.newEventBadgeLabel.text = "1"
+                        self.showAlert(title: "New invitation!", message: "You have been invited to a new event.\nCheck it out!")
+                        
+                        
+                    })
+                    break
+                }
+                self.newEventBadgeLabel.isHidden = true
+                self.newEventBadge.isHidden = true
+                
+            }
+            
+            if snapshot.childrenCount == 0 {
+                
+            }
+        })
+        
+    }
+    
+    
+    
+    
+    
+    func getEvent(_ eventID: String, completion: @escaping (Event) -> Void) {
+        
+        Database.database().reference().child("Events").child(eventID).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            let title = snapshot.childSnapshot(forPath: "title").value as! String
+            let time = snapshot.childSnapshot(forPath: "time").value as! String
+            let description = snapshot.childSnapshot(forPath: "description").value as! String
+            let imageRef = snapshot.childSnapshot(forPath: "imageRef").value as! String
+            let soundRef = snapshot.childSnapshot(forPath: "soundRef").value as! String
+            let latitude = snapshot.childSnapshot(forPath: "position").childSnapshot(forPath: "latitude").value as! Double
+            let longitude = snapshot.childSnapshot(forPath: "position").childSnapshot(forPath: "longitude").value as! Double
+            let type =  snapshot.childSnapshot(forPath: "eventType").value as! String
+            let host = snapshot.childSnapshot(forPath: "host").value as! String
+            var invitedFriends = [[String:[String:String]]]()
+            for child in snapshot.childSnapshot(forPath: "invitedFriends").children {
+                let snap = child as! DataSnapshot
+                let key = snap.key
+                let nameValue = snap.childSnapshot(forPath: "name").value as! String
+                let answerValue = snap.childSnapshot(forPath: "answer").value as! String
+                let invitedFriend = [key:[nameValue:answerValue]]
+                invitedFriends.append(invitedFriend)
+            }
+            
+            
+            completion(Event(title: title, time: time, description: description, soundRef: soundRef, imageRef: imageRef, latitude: latitude, longitude: longitude, type: type, invitedFriends: invitedFriends, host: host))
+            
+        })
+        
+    }
+    
+    func showAlert(title: String, message: String){
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Later", style: .cancel, handler: nil))
+        
+        alert.addAction(UIAlertAction(title: "Open", style: .default, handler: { (action) in
+            self.openEvent()
+        }))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func openEvent(){
+        performSegue(withIdentifier: "popUpSegue", sender: self)
+    }
+    
+    
+    
     
     @objc func handleTap(_ gestureReconizer: UILongPressGestureRecognizer) {
         
@@ -114,51 +234,54 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
         let region = MKCoordinateRegionMakeWithDistance(center, width, height)
         self.mapView.setRegion(region, animated: true)
         
-//        let coordinate = CLLocationCoordinate2D(latitude: 59.3304, longitude: 18.0588)
-//
-//        pin = AddPin(title: "Spot", coordinates: coordinate)
-//        mapView.addAnnotation(pin!)
+        //        let coordinate = CLLocationCoordinate2D(latitude: 59.3304, longitude: 18.0588)
+        //
+        //        pin = AddPin(title: "Spot", coordinates: coordinate)
+        //        mapView.addAnnotation(pin!)
     }
     
-//    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-//        let annotationView = MKAnnotationView(annotation: pin, reuseIdentifier: "myPin")
-//        let button = UIButton()
-//        annotationView.addSubview(button)
-//        annotationView.image = UIImage(named: "checkMark")
-//        let transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-//        annotationView.transform = transform
-//        return annotationView
-//    }
-//    
-
+    //    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    //        let annotationView = MKAnnotationView(annotation: pin, reuseIdentifier: "myPin")
+    //        let button = UIButton()
+    //        annotationView.addSubview(button)
+    //        annotationView.image = UIImage(named: "checkMark")
+    //        let transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+    //        annotationView.transform = transform
+    //        return annotationView
+    //    }
+    //
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return friendList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
-        cell.textLabel?.text = friendList[indexPath.row].email
+        cell.textLabel?.text = friendList[indexPath.row].name
         return cell
     }
-    
-//    func fetchUsers(){
-//        Database.database().reference().child("users").observe(.childAdded, with: { (snapshot) in
-//            let email = snapshot.childSnapshot(forPath: "Email")
-//            let friend = Friends()
-//            friend.email = email.value as? String
-//            self.userList.append(user)
-//
-//            self.tableView.reloadData()
-//
-//        }, withCancel: nil)
-//    }
     
     
     @IBAction func newEventSegue(_ sender: UIButton) {
         performSegue(withIdentifier: "newEventSegue", sender: self)
     }
     
-
-
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let destination = segue.destination as? EventPopUP{
+            if let event = event{
+                destination.event = event
+            }
+            if let ID = usersEventID{
+                destination.eventID = ID
+            }
+        }
+        if let destination = segue.destination as? TabBarController {
+            destination.counter = friendCount
+        }
+    }
+    
+    
+    
 }
 
