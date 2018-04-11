@@ -18,7 +18,7 @@ import UserNotifications
 import AVFoundation
 
 
-class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, MessagingDelegate, UICollectionViewDelegate, UICollectionViewDataSource, AVAudioRecorderDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UITextViewDelegate  {
+class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, MessagingDelegate, UICollectionViewDelegate, UICollectionViewDataSource, AVAudioRecorderDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UITextViewDelegate, CLLocationManagerDelegate  {
  var storageReference: StorageReference{
         return Storage.storage().reference().child("storage")
     }
@@ -80,12 +80,15 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     var sendImage = UIImageView()
     @IBOutlet weak var canvas: UIImageView!
     var start: CGPoint?
-    var paintColor: CGColor = UIColor.blue.cgColor
+    var paintColor: CGColor = UIColor.black.cgColor
     var lineWidht: CGFloat = 5
     var maxLineWidth: CGFloat = 20
     var minLineWidth: CGFloat = 2
     var deltaLineWidth: CGFloat = 2
     var drawingReference: String?
+    
+    @IBOutlet weak var closeDrawingViewOutlet: UIButton!
+    
     
     //MARK: MICROPHONE VARIBLES
     @IBOutlet weak var micView: UIView!
@@ -95,7 +98,12 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     var audioPlayer: AVAudioPlayer!
     var soundRef: String?
     
+    @IBOutlet weak var labelUnderStartRecording: UILabel!
+    @IBOutlet weak var closeMicViewButtonOutlet: UIButton!
     @IBOutlet weak var recordingButtonLabel: UIButton!
+    @IBOutlet weak var timeLabelOverRecord: UILabel!
+    var countdownTimer = 10
+    var timer = Timer()
     
     
     //MARK: DISPLAY LOCATION VARIBLES
@@ -112,15 +120,21 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     let PURPLE_COLOR = UIColor(hexString: "#8F6886")
     var typeOfEvent: String?
     var pickerWheelSelections = [String]()
-    
+    var myTimeStamp: Int?
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupKeyboardObservers()
         setCurrentUserName()
         pickerWheelSelections = ["– Select type of event –", "Vin", "Middag", "Öl", "Bio"]
         
         imageView.roundCorners(corners: [.topRight, .topLeft], radius: 15)
+        closeMicViewButtonOutlet.roundCorners(corners: .topLeft, radius: 10)
+        closeDrawingViewOutlet.roundCorners(corners: .topLeft, radius: 10)
+        canvas.roundCorners(corners: [.topLeft, .topRight], radius: 10)
+        
         addFriendObserver()
         searchBar.delegate = self
         popUpView.alpha = 0
@@ -133,22 +147,71 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         firstCollectionView.delegate = self
         firstCollectionView.dataSource = self
         
+        
+        
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        gestureRecognizer.delegate = self as? UIGestureRecognizerDelegate
+        myMapView.addGestureRecognizer(gestureRecognizer)
+        
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        myMapView.showsUserLocation = true
+        zoomInOnLocation()
     }
     
     //MARK: MAP FUNCTIONS
+    func zoomInOnLocation() {
+        
+        //get location
+        let location = myMapView.userLocation.coordinate
+        let latitude = location.latitude
+        let longitude = location.longitude
+        
+        //Zooming in on annotation
+        let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(latitude, longitude)
+        let span = MKCoordinateSpanMake(0.3, 0.3)
+        let region = MKCoordinateRegionMake(coordinate, span)
+        self.myMapView.setRegion(region, animated: true)
+    }
+    
+    @objc func handleTap(_ gestureReconizer: UILongPressGestureRecognizer) {
+        let location = gestureReconizer.location(in: myMapView)
+        let coordinate = myMapView.convert(location,toCoordinateFrom: myMapView)
+        
+//        // Add annotation:
+//        let annotation = MKPointAnnotation()
+//        annotation.coordinate = coordinate
+//        myMapView.addAnnotation(annotation)
+    
+        self.placeAnnotation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+    }
+    
+    var pin:AddPin?
+    
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        var view = mapView.dequeueReusableAnnotationView(withIdentifier: "annotation")
+        if !(annotation is MKUserLocation) {
+     
+        let annotationView = MKAnnotationView(annotation: pin, reuseIdentifier: "myPin")
         if view == nil {
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "annotation")
-            view?.canShowCallout = true
-            view?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            annotationView.canShowCallout = true
+            annotationView.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
         } else {
-            view?.annotation = annotation
+            annotationView.annotation = annotation
         }
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        annotationView.image = UIImage(named: "cross")
+        
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
         button.addTarget(self, action: #selector(self.buttonAction), for: .touchUpInside)
-        view?.addSubview(button)
-        return view
+        annotationView.addSubview(button)
+        let transform = CGAffineTransform(scaleX: 0.7, y: 0.7)
+        annotationView.transform = transform
+        return annotationView
+        }
+        else {
+            return nil
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -205,30 +268,35 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
                 self.alert(title: "Oops", message: "Could not find location")
             }
             else{
-                //remove annotation
-                let annotations = self.myMapView.annotations
-                self.myMapView.removeAnnotations(annotations)
-                
                 //get data
                 let latitude = response?.boundingRegion.center.latitude
                 let longitude = response?.boundingRegion.center.longitude
                 
-                //create annotation
-                let annotation = MKPointAnnotation()
-                annotation.title = self.searchBar.text
-                annotation.subtitle = "Klick to invite friends"
-                annotation.coordinate = CLLocationCoordinate2DMake(latitude!, longitude!)
-                self.myMapView.addAnnotation(annotation)
-                
-                //Zooming in on annotation
-                let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(latitude!, longitude!)
-                self.annotationLocation = CLLocation(latitude: latitude!, longitude: longitude!)
-                let span = MKCoordinateSpanMake(0.1, 0.1)
-                let region = MKCoordinateRegionMake(coordinate, span)
-                self.myMapView.setRegion(region, animated: true)
-                
+                self.placeAnnotation(latitude: latitude!, longitude: longitude!)
+
             }
         }
+    }
+    
+    func placeAnnotation(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+        //remove annotation
+        let annotations = self.myMapView.annotations
+        self.myMapView.removeAnnotations(annotations)
+        
+        
+        //create annotation
+        let annotation = MKPointAnnotation()
+        annotation.title = self.searchBar.text
+        annotation.subtitle = "Klick to invite friends"
+        annotation.coordinate = CLLocationCoordinate2DMake(latitude, longitude)
+        self.myMapView.addAnnotation(annotation)
+        
+        //Zooming in on annotation
+        let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(latitude, longitude)
+        self.annotationLocation = CLLocation(latitude: latitude, longitude: longitude)
+        let span = MKCoordinateSpanMake(0.05, 0.05)
+        let region = MKCoordinateRegionMake(coordinate, span)
+        self.myMapView.setRegion(region, animated: true)
     }
     
     
@@ -363,7 +431,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     }
     
     @IBAction func colorButton(_ sender: UIButton) {
-        paintColor = (sender.backgroundColor?.cgColor)!
+        paintColor = (sender.tintColor.cgColor)
     }
     
     func uploadDrawnImage(){
@@ -384,16 +452,16 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     }
     
     
-    //    @IBAction func increaseWidth(_ sender: UIBarButtonItem) {
-    //        if (lineWidht<maxLineWidth){
-    //            lineWidht = lineWidht + deltaLineWidth
-    //        }
-    //    }
-    //    @IBAction func decreaseWidth(_ sender: UIBarButtonItem) {
-    //        if(lineWidht>minLineWidth){
-    //            lineWidht = lineWidht - deltaLineWidth
-    //        }
-    //    }
+        @IBAction func increaseWidth(_ sender: UIButton) {
+            if (lineWidht<maxLineWidth){
+                lineWidht = lineWidht + deltaLineWidth
+            }
+        }
+        @IBAction func decreaseWidth(_ sender: UIButton) {
+            if(lineWidht>minLineWidth){
+                lineWidht = lineWidht - deltaLineWidth
+            }
+        }
     
     
     
@@ -508,7 +576,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
                     }
                     
                     let key = USER_REF.child(CURRENT_USER_ID).child("posts").childByAutoId().key
-                    let childUpdates = ["/Events/\(key)/": ["eventID": eventID, "hasBeenRead": true]]
+                    let childUpdates = ["/Events/\(key)/": ["eventID": eventID, "hasBeenRead": true, "timeStamp": self.myTimeStamp ?? 0]] as [String: Any]
                     CURRENT_USER_REF.updateChildValues(childUpdates)
                     let host1 = ["name": String(host.name), "answer": "Comming", "newTextMessage": false] as [String : Any]
                     ref.child("invitedFriends").child(CURRENT_USER_ID).updateChildValues(host1)
@@ -535,7 +603,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     
     func sendEventRefToUser(eventRef: String, userID: String){
         let key = USER_REF.child(userID).child("posts").childByAutoId().key
-        let childUpdates = ["/\(userID)/Events/\(key)/": ["eventID": eventRef, "hasBeenRead": false]]
+        let childUpdates = ["/\(userID)/Events/\(key)/": ["eventID": eventRef, "hasBeenRead": false, "timeStamp": self.myTimeStamp ?? 0]] as [String: Any]
         USER_REF.updateChildValues(childUpdates)
 
         sendMessage(key: userID)
@@ -557,6 +625,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         datePickerOutlet.isHidden = false
         pickerWheel.isHidden = true
         viewBehindPickerWheel.alpha = 1.0
+        self.buttonToClosePickerWheelAndKeyboard.isHidden = false
     }
     
     @IBAction func datePicker(_ sender: UIDatePicker) {
@@ -568,6 +637,9 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         
         let strDate = dateFormatter.string(from: datePickerOutlet.date)
         let strTime = timeFormatter.string(from: datePickerOutlet.date)
+        
+        myTimeStamp = Int((self.datePickerOutlet?.date.timeIntervalSince1970)!)
+        
         
         self.dateTime = "\(strDate)"
         self.timeTime = "\(strTime)"
@@ -607,12 +679,13 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     
     @IBAction func recordButton(_ sender: UIButton) {
         
+        
         if audioRecorder == nil{
             let filename = getDirectory().appendingPathComponent("track.m4a")
             let settings = [AVFormatIDKey: Int(kAudioFormatMPEG4AAC), AVSampleRateKey: 12000, AVNumberOfChannelsKey: 1, AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue]
             
             do{
-        
+                timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(NewEvent.clock), userInfo: nil, repeats: true)
                 audioRecorder = try AVAudioRecorder(url: filename, settings: settings)
                 
                 audioRecorder.delegate = self
@@ -620,17 +693,22 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
                 audioRecorder.stop()
                 SetSessionPlayerOn()
                 audioRecorder.record()
-                recordingButtonLabel.setTitle("Stop Recording", for: .normal)
+                labelUnderStartRecording.text = "Stop recording"
             }
             catch{
                 displayAlert(title: "Error", message: "Recording failed")
             }
         }
         else {
+            timer.invalidate()
+            timeLabelOverRecord.text = "10"
+            countdownTimer = 10
             audioRecorder.stop()
             SetSessionPlayerOff()
             audioRecorder = nil
-            recordingButtonLabel.setTitle("Start recording", for: .normal)
+            labelUnderStartRecording.text = "Press to start recording"
+            
+            
             
         }
     }
@@ -683,6 +761,9 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     
     @IBAction func uploadSoundButton(_ sender: UIButton) {
         uploadSound()
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.curveEaseIn], animations: {
+            self.micView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
+        }, completion: nil)
     }
     
     func uploadSound() {
@@ -710,6 +791,20 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
             self.micView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
         }, completion: nil)
     }
+    
+    @objc func clock() {
+        countdownTimer = countdownTimer-1
+        timeLabelOverRecord.text = String(countdownTimer)
+     
+        if (countdownTimer == 0){
+            audioRecorder.stop()
+            labelUnderStartRecording.text = "Press to start recording"
+            timer.invalidate()
+            timeLabelOverRecord.text = "10"
+            countdownTimer = 10
+        }
+    }
+    
     
     //MARK: SELECT TYPE OF EVENT
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -750,6 +845,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     @IBAction func typeOfEventSelector(_ sender: UIButton) {
         pickerWheel.isHidden = false
         datePickerOutlet.isHidden = true
+        self.buttonToClosePickerWheelAndKeyboard.isHidden = false
         self.viewBehindPickerWheel.alpha = 1
     }
     
@@ -761,6 +857,56 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         textFieldPlaceholder.isHidden = true
+    }
+    
+    @IBOutlet weak var buttonToClosePickerWheelAndKeyboard: UIButton!
+    
+    @IBAction func buttonToCloseKeyboardAndPickerView(_ sender: UIButton) {
+        view.endEditing(true)
+        self.pickerWheel.isHidden = true
+        self.datePickerOutlet.isHidden = true
+        self.viewBehindPickerWheel.alpha = 0
+        self.buttonToClosePickerWheelAndKeyboard.isHidden = true
+    }
+    
+    func setupKeyboardObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: Notification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: Notification.Name.UIKeyboardWillHide, object: nil)
+    }
+    
+    var bottomConstraint: NSLayoutConstraint?
+    var topConstraint: NSLayoutConstraint?
+    
+    @IBOutlet weak var eventDiscriptionContainerView: UIViewX!
+    
+    @objc func keyboardWillShow(notification: Notification){
+        self.buttonToClosePickerWheelAndKeyboard.isHidden = false
+        let keyboardDuration = (notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double)
+        let keyboardFrame = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue
+        
+        
+        self.topConstraint = self.eventDiscriptionContainerView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: -(keyboardFrame?.height)!-200)
+        self.bottomConstraint = self.eventDiscriptionContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -(keyboardFrame?.height)!-81)
+        
+        self.bottomConstraint!.isActive = true
+        self.topConstraint!.isActive = true
+        
+        UIView.animate(withDuration: keyboardDuration!) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: Notification){
+        
+        let keyboardDuration = (notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double)
+        
+        self.bottomConstraint?.isActive = false
+        self.topConstraint?.isActive = false
+        
+        UIView.animate(withDuration: keyboardDuration!) {
+            self.view.layoutIfNeeded()
+        }
+        
     }
     
     

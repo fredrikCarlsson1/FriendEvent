@@ -12,9 +12,8 @@ import FirebaseDatabase
 import FirebaseAuth
 
 
-class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITableViewDataSource {
+class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource {
 
-    
     @IBOutlet weak var newEventBadge: UIImageView!
     @IBOutlet weak var newEventBadgeLabel: UILabel!
     @IBOutlet weak var newFriendBadge: UIImageView!
@@ -45,22 +44,24 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
     var dbHandler: DatabaseHandle?
     
     var friendCount = 0
-    var pin:AddPin?
+    
     var friendList = [User]()
     var events = [Event]()
+  
 
     override func viewDidLoad() {
         super.viewDidLoad()
         dbReference = Database.database().reference()
-        
+        self.tableView.rowHeight = 60
         addFriendObserver()
 
         mapView.delegate = self
+        mapView.showsUserLocation = true
         mapView.dropShadow()
-        self.mapView.setUserTrackingMode(.follow, animated: true)
-        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        gestureRecognizer.delegate = self as? UIGestureRecognizerDelegate
-        mapView.addGestureRecognizer(gestureRecognizer)
+      
+        
+        
+        //self.mapView.setUserTrackingMode(.followWithHeading, animated: true)
         
     }
     
@@ -68,7 +69,88 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
         super.viewDidAppear(animated)
         addRequestObserver()
         eventObserver()
+        //self.mapView.setUserTrackingMode(.none, animated: false)
+        zoomInOnLocation()
+      
     }
+    
+    //MARK: ALL map functions
+    func getDistance(latitude: Double, longitude: Double) -> Int{
+        let friendLocation = CLLocation(latitude: latitude, longitude: longitude)
+        let myLocation = mapView.userLocation.coordinate
+        let myLocationCoordinates = CLLocation(latitude: myLocation.latitude, longitude: myLocation.longitude)
+        
+        let distanceInMeters = friendLocation.distance(from: myLocationCoordinates)
+        
+        return Int(distanceInMeters*0.001)
+        
+    }
+    
+
+    
+    func placeAnnotation(user: User) {
+
+        //create annotation
+
+        let annotation = MKPointAnnotation()
+        
+        annotation.title = user.name
+        
+        annotation.coordinate = CLLocationCoordinate2DMake(user.latitude, user.longitude)
+        self.mapView.addAnnotation(annotation)
+  
+    }
+    
+    var pin:AddPin?
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if !(annotation is MKUserLocation) {
+            
+            let annotationView = MKAnnotationView(annotation: pin, reuseIdentifier: "myPin")
+            if view == nil {
+                view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "annotation")
+                annotationView.canShowCallout = true
+                annotationView.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            } else {
+                annotationView.canShowCallout = true
+                annotationView.annotation = annotation
+            }
+            
+            
+            
+            annotationView.image = UIImage(named: "user")
+            annotationView.clipsToBounds = false
+            annotationView.layer.shadowColor = UIColor.lightGray.cgColor
+            annotationView.layer.shadowOpacity = 1
+            annotationView.layer.shadowOffset = CGSize.zero
+            annotationView.layer.shadowRadius = 10
+            annotationView.layer.shadowPath = UIBezierPath(roundedRect: annotationView.bounds, cornerRadius: 10).cgPath
+          
+            let transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+            annotationView.transform = transform
+            return annotationView
+        }
+        else {
+            return nil
+        }
+    }
+ 
+    
+    
+   func zoomInOnLocation() {
+
+        //get location
+        let location = mapView.userLocation.coordinate
+        let latitude = location.latitude
+        let longitude = location.longitude
+      
+        //Zooming in on annotation
+        let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(latitude, longitude)
+        let span = MKCoordinateSpanMake(0.2, 0.2)
+        let region = MKCoordinateRegionMake(coordinate, span)
+        self.mapView.setRegion(region, animated: true)
+    }
+
     
     //MARK: FRIEND REQUESTS - Increases the friends badge count with one for every friend request the current user has
     func addRequestObserver() {
@@ -98,8 +180,11 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
             self.friendList.removeAll()
             for child in snapshot.children.allObjects as! [DataSnapshot] {
                 let id = child.key
+                
                 self.getUser(id, completion: { (user) in
                     self.friendList.append(user)
+                    self.friendList.sort(by: {$1.distance > $0.distance})
+                    self.placeAnnotation(user: user)
                     self.tableView.reloadData()
                 })
             }
@@ -115,8 +200,11 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
         USER_REF.child(userID).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
             let email = snapshot.childSnapshot(forPath: "Email").value as! String
             let id = snapshot.key
+            let latitude = snapshot.childSnapshot(forPath: "latitude").value as! Double
+            let longitude = snapshot.childSnapshot(forPath: "longitude").value as! Double
+            let distance = self.getDistance(latitude: latitude, longitude: longitude)
             let name = snapshot.childSnapshot(forPath: "username").value as! String
-            completion(User(email: email, userID: id, name: name))
+            completion(User(email: email, userID: id, name: name, latitude: latitude, longitude: longitude, distance: distance))
         })
     }
     
@@ -134,28 +222,30 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
                         event.eventId = id
                         event.eventReference = eventID
                         self.events.append(event)
+                        if self.showingAlert == false{
+                        self.showAlert(title: "New invite!", message: "You got invited to a new event! \nCheck it out!")
+                        }
                         if event.hasUnreadTextMessage{
                             
                         }
                         self.newEventBadgeLabel.isHidden = false
                         self.newEventBadge.isHidden = false
                         self.newEventBadgeLabel.text = String(self.events.count)
+                        
                     }
                 })
+
             }
-            if self.events.count > 0 {
-                self.showAlert(title: "New invitation!", message: "You have been invited to a new event.\nCheck it out!")
-            }
-            
-            
+      
             if snapshot.childrenCount == 0 {
                 self.newEventBadgeLabel.isHidden = true
                 self.newEventBadge.isHidden = true
-                
             }
         })
         
     }
+    
+    var showingAlert = false
     
     //Gets all events and updates badge if there is a new Guestbook message in any of the events
     func getEvent(_ eventID: String, completion: @escaping (Event) -> Void) {
@@ -183,12 +273,12 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
                         self.newEventBadgeLabel.isHidden = false
                         self.newEventBadge.isHidden = false
                         self.newEventBadgeLabel.text = String("NYTT")
-                        print("NYTT")
+                        
                     }
                     else {
                         self.newEventBadgeLabel.isHidden = true
                         self.newEventBadge.isHidden = true
-                        print ("INGET NYTT")
+                        
                     }
                     invitedFriends.append(invitedFriend)
                 }
@@ -201,10 +291,11 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
     
     //MARK: Shows alert when current user is invited to a new Event
     func showAlert(title: String, message: String){
+        self.showingAlert = true
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "Later", style: .cancel, handler: nil))
-        
+       
         alert.addAction(UIAlertAction(title: "Open", style: .default, handler: { (action) in
             self.openEvent()
         }))
@@ -217,41 +308,6 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
     
 
     
-    //MARK: ALL map functions
-    @objc func handleTap(_ gestureReconizer: UILongPressGestureRecognizer) {
-        
-        let location = gestureReconizer.location(in: mapView)
-        let coordinate = mapView.convert(location,toCoordinateFrom: mapView)
-        
-        // Add annotation:
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = coordinate
-        mapView.addAnnotation(annotation)
-    }
-    
-    func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
-        let center = CLLocationCoordinate2D(latitude: userLocation.coordinate.latitude, longitude: userLocation.coordinate.longitude)
-        let width = 150.0 //meter
-        let height = 150.0
-        let region = MKCoordinateRegionMakeWithDistance(center, width, height)
-        self.mapView.setRegion(region, animated: true)
-        
-        //        let coordinate = CLLocationCoordinate2D(latitude: 59.3304, longitude: 18.0588)
-        //
-        //        pin = AddPin(title: "Spot", coordinates: coordinate)
-        //        mapView.addAnnotation(pin!)
-    }
-    
-    //    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    //        let annotationView = MKAnnotationView(annotation: pin, reuseIdentifier: "myPin")
-    //        let button = UIButton()
-    //        annotationView.addSubview(button)
-    //        annotationView.image = UIImage(named: "checkMark")
-    //        let transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-    //        annotationView.transform = transform
-    //        return annotationView
-    //    }
-    //
     
     
     //MARK: ALL table view functions - (Displays friends under mapview)
@@ -260,8 +316,17 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
-        cell.textLabel?.text = friendList[indexPath.row].name
+        let cell = tableView.dequeueReusableCell(withIdentifier: "startViewCell", for: indexPath) as! StartViewCells
+        let user = friendList[indexPath.row]
+        
+        cell.nameLabel.text = user.name
+        cell.emailLabel.text = user.email
+        if (user.longitude != 0 && user.latitude != 0){
+        cell.distanceLabel.text = "\(user.distance) km"
+        }
+        else {
+            cell.distanceLabel.text = "-"
+        }
         return cell
     }
     
@@ -280,6 +345,7 @@ class StartView: UIViewController, MKMapViewDelegate, UITableViewDelegate, UITab
         if let destination = segue.destination as? TabBarController {
             destination.counter = friendCount
         }
+
     }
     
     

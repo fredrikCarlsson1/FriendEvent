@@ -39,6 +39,7 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
     
     
     @IBOutlet var userTableView: UITableView!
+    
     let searchController = UISearchController(searchResultsController: nil)
     
     
@@ -63,8 +64,7 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
     
     
     func fetchUsers(){
-        
-        Database.database().reference().child("users").observe(.childAdded, with: { (snapshot) in
+         Database.database().reference().child("users").observe(.childAdded, with: { (snapshot) in
             let email = snapshot.childSnapshot(forPath: "Email").value as! String
             let id = snapshot.key as String
             let name = snapshot.childSnapshot(forPath: "username").value as! String
@@ -121,19 +121,22 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
             }
         }
         cell.button.addTarget(self, action: #selector(pressButton(_:)), for: .touchUpInside)
-        cell.textLabel?.text = user.email
+        cell.nameLabel.text = user.name
+        cell.mailLabel.text = user.email
         
         return cell
     }
     
     @objc func pressButton(_ button: UIButton) {
+        button.isHidden = true
         if searchController.isActive && searchController.searchBar.text != ""{
             sendRequestToUser(filtredUsers[button.tag].id)
-            print (filtredUsers[button.tag].id)
+            
+            
         }
         else {
             sendRequestToUser(userArray[button.tag].id)
-            print (userArray[button.tag].id)
+            
         }
     }
     

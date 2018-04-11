@@ -83,6 +83,13 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     }
     
+    /** Decline a friend request from the user with the specified id */
+    func declineFriendRequest(_ userID: String) {
+        CURRENT_USER_REF.child("requests").child(userID).removeValue()
+
+       // USER_REF.child(userID).child("requests").child(CURRENT_USER_ID).removeValue()
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return requestList.count
     }
@@ -96,7 +103,10 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         cell.acceptFriendButton.tag = indexPath.row
         
-        cell.acceptFriendButton.addTarget(self, action: #selector(pressButton(_:)), for: .touchUpInside)
+        cell.acceptFriendButton.addTarget(self, action: #selector(acceptButton(_:)), for: .touchUpInside)
+        
+        cell.rejectFriendButton.addTarget(self, action: #selector(rejectButton(_:)), for: .touchUpInside)
+        
         
         cell.nameLabel.text = requestList[indexPath.row].name
         cell.emailLabel.text = requestList[indexPath.row].email
@@ -104,10 +114,16 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
-    @objc func pressButton(_ button: UIButton) {
+    @objc func acceptButton(_ button: UIButton) {
         acceptFriendRequest(requestList[button.tag].id)
-        print (requestList[button.tag].email)
     }
+    
+    @objc func rejectButton(_ button: UIButton) {
+        declineFriendRequest(requestList[button.tag].id)
+    }
+    
+    
+    
     
 }
 

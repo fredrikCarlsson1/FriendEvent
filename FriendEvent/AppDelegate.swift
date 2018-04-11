@@ -29,7 +29,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         locationMangager.delegate = self
-        locationMangager.requestWhenInUseAuthorization()
+        locationMangager.requestAlwaysAuthorization()
+        
+        
+        //locationMangager.requestWhenInUseAuthorization()
         locationMangager.startUpdatingLocation()
         
         
@@ -80,11 +83,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let location = locations[0]
         AppDelegate.locationPlace = location.coordinate
         
-//        let span = MKCoordinateSpanMake(<#T##latitudeDelta: CLLocationDegrees##CLLocationDegrees#>, <#T##longitudeDelta: CLLocationDegrees##CLLocationDegrees#>)
-//        let region = MKCoordinateRegion(center: <#T##CLLocationCoordinate2D#>, span: <#T##MKCoordinateSpan#>)
-//
+
     }
-    
+ 
     
     // FOR SINGLE DEVICE MESSAGE
     
@@ -102,6 +103,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     
     
+    
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let notification = response.notification.request.content.body
         
@@ -112,9 +114,74 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func applicationDidEnterBackground(_ application: UIApplication) {
         Messaging.messaging().shouldEstablishDirectChannel = false
+        print("hej")
+        timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(AppDelegate.test), userInfo: nil, repeats: true)
+        doBackgroundTask()
         
     }
+    
+    @objc func test(){
+        let date = Date()
+        let calendar = Calendar.current
+        let minutes = calendar.component(.minute, from: date)
+        
+        guard let latitude = AppDelegate.locationPlace?.latitude else {return}
+        guard let longitude = AppDelegate.locationPlace?.longitude else {return}
+        
+        let id = Auth.auth().currentUser?.uid
+        
+        let USER_REF = Database.database().reference().child("users")
+        
+        USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
+            if let id = id{
+            if snapshot.hasChild(id){
+                print("user exists")
+                
+                var CURRENT_USER_REF: DatabaseReference {
+                    let id = Auth.auth().currentUser!.uid
+                    return USER_REF.child("\(id)")
+                }
+                let values = ["latitude": latitude, "longitude": longitude] as [String : Any]
+                
+                CURRENT_USER_REF.updateChildValues(values)
+            }
+            }else{
+                
+                print("user dosnt exist")
+            }
+            
+            
+        })
+        
+        
+        
+        
 
+        
+       
+    }
+    
+    var timer = Timer()
+    
+    func doBackgroundTask() {
+        
+        DispatchQueue.main.async {
+            
+            self.beginBackgroundUpdateTask()
+           
+        }
+    }
+    
+    func beginBackgroundUpdateTask() {
+        UIApplication.shared.beginBackgroundTask(expirationHandler: {
+            self.timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(AppDelegate.test), userInfo: nil, repeats: true)
+        })
+    }
+
+    
+    
+    
+    
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         guard let token = InstanceID.instanceID().token() else {return}
         

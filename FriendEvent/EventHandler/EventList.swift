@@ -11,7 +11,13 @@ import Firebase
 
 class EventList: UITableViewController {
     
-    var eventList = [Event]()
+    struct AllEvents {
+        let title: String!
+        var events: [Event]!
+    }
+    var allEventsArray = [AllEvents]()
+    
+    let PURPLE_COLOR = UIColor(hexString: "#8F6886")
     
     var eventID: String?
     
@@ -32,31 +38,53 @@ class EventList: UITableViewController {
     var CURRENT_USER_EVENTS_REF: DatabaseReference {
         return CURRENT_USER_REF.child("Events")
     }
+    var newEvents = [Event]()
+    var oldEvents = [Event]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.tableView.rowHeight = 70
+        allEventsArray = [AllEvents(title: "Upcomming events", events: newEvents), AllEvents(title: "Previous events", events: oldEvents)]
         
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         eventObserver()
+        
     }
     
     
     func eventObserver() {
         CURRENT_USER_EVENTS_REF.observe(DataEventType.value, with: { (snapshot) in
-            self.eventList.removeAll()
+            self.allEventsArray[1].events.removeAll()
+            self.allEventsArray[0].events.removeAll()
             for child in snapshot.children.allObjects as! [DataSnapshot] {
                 let id = child.key
                 let eventID = child.childSnapshot(forPath: "eventID").value as! String
                 let hasBeenRead =  child.childSnapshot(forPath: "hasBeenRead").value as! Bool
                 
+                let timeStamp = child.childSnapshot(forPath: "timeStamp").value as! Int
+                
+                
                 self.getEvent(eventID, completion: { (event) in
                     event.eventId = id
                     event.eventReference = eventID
                     event.hasBeenRead = hasBeenRead
-                    self.eventList.append(event)
-                    self.eventList.sort(by: {$1.time > $0.time})
+                    
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateStyle = DateFormatter.Style.short
+                    
+                    
+                    if (self.checkDate(eventDate: timeStamp)){
+                         self.allEventsArray[0].events.append(event)
+                        
+                        
+                    }
+                    else {
+                        self.allEventsArray[1].events.append(event)
+                        self.allEventsArray[1].events.sort(by: {$1.time > $0.time})
+                    }
+                    
                     self.eventTableView.reloadData()
                 })
             }
@@ -66,6 +94,18 @@ class EventList: UITableViewController {
             }
         })
         
+    }
+    
+    func checkDate(eventDate: Int)->Bool{
+        let todaysTime = Int(Date().timeIntervalSince1970)
+        print("TODAYS TIME: \(todaysTime)")
+        
+        if (eventDate>todaysTime){
+            return true
+        }
+        else{
+            return false
+        }
     }
     
     func getEvent(_ eventID: String, completion: @escaping (Event) -> Void) {
@@ -103,27 +143,24 @@ class EventList: UITableViewController {
     
     
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     // MARK: - Table view data source
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
+        return allEventsArray.count
+        
     }
+    
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return eventList.count
+        return allEventsArray[section].events.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: EventListCell = tableView.dequeueReusableCell(withIdentifier: "eventListCell", for: indexPath) as! EventListCell
         
-        let event = eventList[indexPath.row]
+        let event = allEventsArray[indexPath.section].events[indexPath.row]
         
         if event.hasBeenRead == false{
             cell.eventTitle.font = UIFont.boldSystemFont(ofSize: 16)
@@ -133,14 +170,14 @@ class EventList: UITableViewController {
             cell.badgeLabel.text = "+1"
         }
         
-        let index = eventList[indexPath.row].time.index(of: "&")!
-        let dateStr = eventList[indexPath.row].time[..<index]
-        let index2 = eventList[indexPath.row].time.index(index, offsetBy: 1)
-        let timeStr = eventList[indexPath.row].time[index2...]
+        let index = allEventsArray[indexPath.section].events[indexPath.row].time.index(of: "&")!
+        let dateStr = allEventsArray[indexPath.section].events[indexPath.row].time[..<index]
+        let index2 = allEventsArray[indexPath.section].events[indexPath.row].time.index(index, offsetBy: 1)
+        let timeStr = allEventsArray[indexPath.section].events[indexPath.row].time[index2...]
         
         
         
-        cell.eventTitle.text = eventList[indexPath.row].title
+        cell.eventTitle.text = allEventsArray[indexPath.section].events[indexPath.row].title
         cell.eventDate.text = String(dateStr)
         cell.eventTime.text = String(timeStr)
         cell.eventTypeImage.layer.masksToBounds = false
@@ -148,30 +185,50 @@ class EventList: UITableViewController {
         cell.eventTypeImage.clipsToBounds = true
         
         
-        switch eventList[indexPath.row].type {
+        switch allEventsArray[indexPath.section].events[indexPath.row].type {
         case "Öl":
             cell.eventTypeImage.image = UIImage(named: "beer_small")
         default:
             cell.eventTypeImage.image = UIImage(named: "question-mark_small")
         }
         
-        
-        
-        
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 70
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "eventListToPopUp", sender: self)
     }
     
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40
+    }
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        
+        
+        view.backgroundColor = PURPLE_COLOR
+        
+        let label = UILabel()
+        label.frame = CGRect(x: 20, y: 5, width: 300, height: 35)
+        label.text = allEventsArray[section].title
+        view.addSubview(label)
+        return view
+    }
+    
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let destination = segue.destination as? EventPopUP {
             if let indexPath = tableView.indexPathForSelectedRow{
                 let selectedRow = indexPath.row
-                destination.event = eventList[selectedRow]
+                destination.event = allEventsArray[indexPath.section].events[selectedRow]
                 
-                if let id = eventList[selectedRow].eventId{
+                if let id = allEventsArray[indexPath.section].events[selectedRow].eventId{
                     destination.eventID = id
                     
                 }

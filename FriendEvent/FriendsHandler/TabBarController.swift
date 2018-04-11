@@ -14,7 +14,7 @@ class TabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let tabItems = self.tabBar.items as NSArray!
+        let tabItems = self.tabBar.items as NSArray?
         
         // In this case we want to modify the badge number of the third tab:
         let tabItem = tabItems![2] as! UITabBarItem
