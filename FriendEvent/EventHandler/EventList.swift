@@ -98,7 +98,6 @@ class EventList: UITableViewController {
     
     func checkDate(eventDate: Int)->Bool{
         let todaysTime = Int(Date().timeIntervalSince1970)
-        print("TODAYS TIME: \(todaysTime)")
         
         if (eventDate>todaysTime){
             return true
@@ -188,10 +187,41 @@ class EventList: UITableViewController {
         switch allEventsArray[indexPath.section].events[indexPath.row].type {
         case "Öl":
             cell.eventTypeImage.image = UIImage(named: "beer_small")
+        case "Middag":
+            cell.eventTypeImage.image = UIImage(named: "dinner_small")
+        case "Vin":
+            cell.eventTypeImage.image = UIImage(named: "wine-small")
+        case "Fotboll":
+            cell.eventTypeImage.image = UIImage(named: "football_small")
+        case "Kaffe":
+            cell.eventTypeImage.image = UIImage(named: "coffe_small")
+        case "TV-spel":
+            cell.eventTypeImage.image = UIImage(named: "video-game_small")
+        case "Gymma":
+            cell.eventTypeImage.image = UIImage(named: "gym-large")
+        case "Plugga":
+            cell.eventTypeImage.image = UIImage(named: "study-large")
+        case "Party":
+            cell.eventTypeImage.image = UIImage(named: "party-small")
+        case "Konsert":
+            cell.eventTypeImage.image = UIImage(named: "consert-small")
+        case "Promenad":
+            cell.eventTypeImage.image = UIImage(named: "walk-small")
+        case "Drink":
+            cell.eventTypeImage.image = UIImage(named: "drinks-small")
+        case "Träna":
+            cell.eventTypeImage.image = UIImage(named: "work-out-small")
+        case "Spela spel":
+            cell.eventTypeImage.image = UIImage(named: "board-game-small")
+        case "Resa":
+            cell.eventTypeImage.image = UIImage(named: "travel-small")
+        case "Film":
+            cell.eventTypeImage.image = UIImage(named: "watch-movie-small")
+        
+
         default:
             cell.eventTypeImage.image = UIImage(named: "question-mark_small")
         }
-        
         return cell
     }
     

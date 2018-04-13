@@ -53,24 +53,20 @@ class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate,
         super.viewDidLoad()
         dbReference = Database.database().reference()
         self.tableView.rowHeight = 60
-        addFriendObserver()
 
         mapView.delegate = self
         mapView.showsUserLocation = true
-        mapView.dropShadow()
       
-        
-        
-        //self.mapView.setUserTrackingMode(.followWithHeading, animated: true)
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        addFriendObserver()
         addRequestObserver()
         eventObserver()
-        //self.mapView.setUserTrackingMode(.none, animated: false)
+        
         zoomInOnLocation()
+        
       
     }
     

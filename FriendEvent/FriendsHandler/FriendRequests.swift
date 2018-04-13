@@ -43,6 +43,8 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Do any additional setup after loading the view.
     }
     
+    let PURPLE_COLOR = UIColor(hexString: "#8F6886")
+    
     /** Gets the User object for the specified user id */
     func getUser(_ userID: String, completion: @escaping (User) -> Void) {
         USER_REF.child(userID).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
@@ -113,6 +115,25 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40
+    }
+
+     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+
+
+        view.backgroundColor = PURPLE_COLOR
+
+        let label = UILabel()
+        label.frame = CGRect(x: 20, y: 5, width: 300, height: 35)
+        label.text = "My friendsrequests"
+        view.addSubview(label)
+        return view
+    }
+
+    
     
     @objc func acceptButton(_ button: UIButton) {
         acceptFriendRequest(requestList[button.tag].id)

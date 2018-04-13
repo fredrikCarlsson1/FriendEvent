@@ -52,6 +52,9 @@
 		5CB11FD220683437006D3FB5 /* EventListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB11FD120683437006D3FB5 /* EventListCell.swift */; };
 		5CB1201620692489006D3FB5 /* RoundedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB1201520692489006D3FB5 /* RoundedImage.swift */; };
 		5CB6DDB1207C0DD00062BF8D /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB6DDB0207C0DD00062BF8D /* Profile.swift */; };
+		5CB6DDB6207E4EC30062BF8D /* emailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB6DDB5207E4EC30062BF8D /* emailCell.swift */; };
+		5CB6DDB8207E4ED30062BF8D /* nameCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB6DDB7207E4ED30062BF8D /* nameCell.swift */; };
+		5CB6DDBA207E4EE30062BF8D /* passwordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB6DDB9207E4EE30062BF8D /* passwordCell.swift */; };
 		5CFB4F03205FDACD00D3C8F0 /* ReusableButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */; };
 		5CFB4F072060608B00D3C8F0 /* TitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFB4F062060608B00D3C8F0 /* TitleCell.swift */; };
 		E99C010F6950A1339C052063 /* Pods_FriendEvent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C766A0E7077FE80E12970193 /* Pods_FriendEvent.framework */; };
@@ -107,6 +110,9 @@
 		5CB11FD120683437006D3FB5 /* EventListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListCell.swift; sourceTree = "<group>"; };
 		5CB1201520692489006D3FB5 /* RoundedImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedImage.swift; sourceTree = "<group>"; };
 		5CB6DDB0207C0DD00062BF8D /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		5CB6DDB5207E4EC30062BF8D /* emailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = emailCell.swift; sourceTree = "<group>"; };
+		5CB6DDB7207E4ED30062BF8D /* nameCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nameCell.swift; sourceTree = "<group>"; };
+		5CB6DDB9207E4EE30062BF8D /* passwordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = passwordCell.swift; sourceTree = "<group>"; };
 		5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableButtonCell.swift; sourceTree = "<group>"; };
 		5CFB4F062060608B00D3C8F0 /* TitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TitleCell.swift; path = /Users/fredrikcarlsson/Documents/SwiftProjects/FriendEvent/FriendEvent/TitleCell.swift; sourceTree = "<absolute>"; };
 		973445D1DA03ADEAB336D8C4 /* Pods-FriendEvent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FriendEvent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FriendEvent/Pods-FriendEvent.debug.xcconfig"; sourceTree = "<group>"; };
@@ -159,7 +165,7 @@
 				5C07AEB320580EC000D961DE /* LogIn.swift */,
 				5C03F9BE204D5D55000DFD08 /* StartView.swift */,
 				5CAAB2A02077DCCB00EC2830 /* StartViewCells.swift */,
-				5CB6DDB0207C0DD00062BF8D /* Profile.swift */,
+				5CB6DDB4207E4E790062BF8D /* Profile */,
 				5C9A4E712052B86A0037A004 /* NewEvent.swift */,
 				5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */,
 				5CFB4F062060608B00D3C8F0 /* TitleCell.swift */,
@@ -195,8 +201,8 @@
 			children = (
 				5C8BE7A42076C75B0075E1E4 /* TabBarController.swift */,
 				5C07AEEE205BF7B000D961DE /* MyFriends.swift */,
-				5C07AEE8205B2D9B00D961DE /* FriendRequests.swift */,
 				5C07AEE4205ABF3C00D961DE /* FindFriends.swift */,
+				5C07AEE8205B2D9B00D961DE /* FriendRequests.swift */,
 				5C07AEE0205AB24800D961DE /* Friends.swift */,
 				5C07AEDE205AB0E900D961DE /* FriendSystem.swift */,
 				5C07AEEC205BDF9D00D961DE /* TableViewCells */,
@@ -255,6 +261,17 @@
 			path = DesignableX;
 			sourceTree = "<group>";
 		};
+		5CB6DDB4207E4E790062BF8D /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				5CB6DDB0207C0DD00062BF8D /* Profile.swift */,
+				5CB6DDB5207E4EC30062BF8D /* emailCell.swift */,
+				5CB6DDB7207E4ED30062BF8D /* nameCell.swift */,
+				5CB6DDB9207E4EE30062BF8D /* passwordCell.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
 		92F145C0477357348952C972 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -301,6 +318,9 @@
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.Push = {
 								enabled = 1;
 							};
@@ -349,6 +369,9 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-FriendEvent/Pods-FriendEvent-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
@@ -358,6 +381,9 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
@@ -420,6 +446,7 @@
 				5C8BE79D207622170075E1E4 /* ViewControllerExtensions.swift in Sources */,
 				5CB1201620692489006D3FB5 /* RoundedImage.swift in Sources */,
 				5CAAB29B2077BCD600EC2830 /* InvitedFriendsCell.swift in Sources */,
+				5CB6DDB8207E4ED30062BF8D /* nameCell.swift in Sources */,
 				5C07AEE1205AB24800D961DE /* Friends.swift in Sources */,
 				5CB6DDB1207C0DD00062BF8D /* Profile.swift in Sources */,
 				5C9A4E89205558DB0037A004 /* UISliderX.swift in Sources */,
@@ -431,6 +458,7 @@
 				5C07AEB420580EC000D961DE /* LogIn.swift in Sources */,
 				5CFB4F072060608B00D3C8F0 /* TitleCell.swift in Sources */,
 				5C9A4E83205558DB0037A004 /* UILabelX.swift in Sources */,
+				5CB6DDBA207E4EE30062BF8D /* passwordCell.swift in Sources */,
 				5C48149F2073A67E008D8398 /* Messages.swift in Sources */,
 				5C03F9BF204D5D55000DFD08 /* StartView.swift in Sources */,
 				5C9A4E84205558DB0037A004 /* UIViewAnchorPoint.swift in Sources */,
@@ -438,6 +466,7 @@
 				5C07AEE5205ABF3C00D961DE /* FindFriends.swift in Sources */,
 				5C9A4E86205558DB0037A004 /* UIImageViewX.swift in Sources */,
 				5C03F9C5204D5D55000DFD08 /* FriendEvent.xcdatamodeld in Sources */,
+				5CB6DDB6207E4EC30062BF8D /* emailCell.swift in Sources */,
 				5C549A8B20626E9600B65096 /* CanvasView.swift in Sources */,
 				5C03F9BD204D5D55000DFD08 /* AppDelegate.swift in Sources */,
 				5C9A4E87205558DB0037A004 /* UIViewX.swift in Sources */,
@@ -604,7 +633,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.carlsson.fredrik.FriendEvent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -621,7 +650,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.carlsson.fredrik.FriendEvent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

@@ -9,6 +9,7 @@
 import UIKit
 import FirebaseAuth
 import Firebase
+import FBSDKLoginKit
 
 
 class LogIn: UIViewController {
@@ -25,6 +26,11 @@ class LogIn: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
+        Auth.auth().addStateDidChangeListener { (auth, user) in
+            if user != nil{
+                self.performSegue(withIdentifier: "loginSegue", sender: self)
+            }
+        }
     }
     
     //MARK: LoginButton - changes to Create user when SIGN UP button is pressed
@@ -38,8 +44,10 @@ class LogIn: UIViewController {
             if (loginButtonOutlet.titleLabel?.text == "Login"){ //Log in
                 Auth.auth().signIn(withEmail: email, password: password, completion: { (user, error) in
                     if (user != nil){
+                        
+                        
                         guard let uid = user?.uid else {return}
-                        let values = ["Email": email, "password": password, "fromDevice": AppDelegate.DEVICEID, "latitude": latitude, "longitude": longitude] as [String : Any]
+                        let values = ["Email": email, "fromDevice": AppDelegate.DEVICEID, "latitude": latitude, "longitude": longitude] as [String : Any]
                         let ref = Database.database().reference().child("users").child(uid)
                         
                         ref.updateChildValues(values)
@@ -62,7 +70,7 @@ class LogIn: UIViewController {
                     Auth.auth().createUser(withEmail: email, password: password, completion: { (user, error) in
                         if (user != nil){
                             guard let uid = user?.uid else {return}
-                            let values = ["Email": email, "password": password, "fromDevice": AppDelegate.DEVICEID, "username": username] as [String : Any]
+                            let values = ["Email": email, "fromDevice": AppDelegate.DEVICEID, "username": username] as [String : Any]
                             let ref = Database.database().reference().child("users").child(uid)
                             ref.updateChildValues(values)
                             self.alert(title: "Successfully registered!", message: "Welcome to Quick Inviter!")
@@ -107,12 +115,70 @@ class LogIn: UIViewController {
             signUpButtonOutlet.isHidden = false
             facebookSignUpButtonOutlet.isHidden = false
             forgotPasswordHaveAccountOutlet.setTitle("I forgot my password", for: .normal)
+            
         }
         else {
             
         }
         
     }
+    
+    
+    
+    @IBAction func signInWithFacebookButton(_ sender: UIButton) {
+        let fbLoginManager = FBSDKLoginManager()
+        fbLoginManager.logIn(withReadPermissions: ["public_profile", "email"], from: self) { (result, error) in
+            if let error = error {
+                self.alert(title: "Failed to login", message: (error.localizedDescription))
+                return
+            }
+       
+            guard let accessToken = FBSDKAccessToken.current() else {
+                print("Failed to get access token")
+                return
+            }
+            
+            let credential = FacebookAuthProvider.credential(withAccessToken: accessToken.tokenString)
+            
+            
+            // Perform login by calling Firebase APIs
+            Auth.auth().signIn(with: credential, completion: { (user, error) in
+                if let error = error {
+                    print("Login error: \(error.localizedDescription)")
+                    let alertController = UIAlertController(title: "Login Error", message: error.localizedDescription, preferredStyle: .alert)
+                    let okayAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+                    alertController.addAction(okayAction)
+                    self.present(alertController, animated: true, completion: nil)
+                    
+                    return
+                }
+                if let currentUser = Auth.auth().currentUser {
+                    self.usernameOutlet.text = currentUser.displayName
+                   
+                    let userEmail = currentUser.email
+                    let userName = currentUser.displayName
+                    
+                    guard let latitude = AppDelegate.locationPlace?.latitude else {return}
+                    guard let longitude = AppDelegate.locationPlace?.longitude else {return}
+                    
+                    
+                    let values = ["username": userName!, "Email": userEmail!, "fromDevice": AppDelegate.DEVICEID, "latitude": latitude, "longitude": longitude] as [String : Any]
+                    
+                    let ref = Database.database().reference().child("users").child(currentUser.uid)
+                    
+                    ref.updateChildValues(values)
+                }
+                // Present the main view
+                self.performSegue(withIdentifier: "loginSegue", sender: self)
+            })
+            
+        }
+    }
+    
+    
+    
+    
+   
     
 }
 

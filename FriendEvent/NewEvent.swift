@@ -128,8 +128,9 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         
         setupKeyboardObservers()
         setCurrentUserName()
-        pickerWheelSelections = ["– Select type of event –", "Vin", "Middag", "Öl", "Bio"]
-        
+        pickerWheelSelections = ["Kaffe", "Vin", "Middag", "Fotboll", "Öl", "Bio", "TV-spel", "Gymma", "Plugga", "Promenad", "Konsert", "Drink", "Party", "Träna", "Resa", "Spela spel", "Film" ]
+        pickerWheelSelections.sort()
+        pickerWheelSelections[0] = "– Select type of event –"
         imageView.roundCorners(corners: [.topRight, .topLeft], radius: 15)
         closeMicViewButtonOutlet.roundCorners(corners: .topLeft, radius: 10)
         closeDrawingViewOutlet.roundCorners(corners: .topLeft, radius: 10)
@@ -290,6 +291,8 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         annotation.subtitle = "Klick to invite friends"
         annotation.coordinate = CLLocationCoordinate2DMake(latitude, longitude)
         self.myMapView.addAnnotation(annotation)
+        self.instructionViewUnderSearchBar.isHidden = false
+        self.instructionLabel.text = "Press the cross to complete your invitation "
         
         //Zooming in on annotation
         let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2DMake(latitude, longitude)
@@ -831,6 +834,34 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
             self.imageView.image = UIImage(named: "popcorn")
         case "Middag":
             self.imageView.image = UIImage(named: "dinner")
+        case "Fotboll":
+            self.imageView.image = UIImage(named: "football-large")
+        case "Kaffe":
+            self.imageView.image = UIImage(named: "coffee-large")
+        case "TV-spel":
+            self.imageView.image = UIImage(named: "video-game_large")
+        case "Gymma":
+            self.imageView.image = UIImage(named: "gym-large")
+        case "Plugga":
+            self.imageView.image = UIImage(named: "study-large")
+        case "Party":
+            self.imageView.image = UIImage(named: "party-large")
+        case "Konsert":
+            self.imageView.image = UIImage(named: "consert-large")
+        case "Promenad":
+            self.imageView.image = UIImage(named: "walk-large")
+        case "Drink":
+            self.imageView.image = UIImage(named: "drinks-large")
+        case "Resa":
+            self.imageView.image = UIImage(named: "travel-large")
+        case "Spela spel":
+            self.imageView.image = UIImage(named: "board-game-large")
+        case "Träna":
+            self.imageView.image = UIImage(named: "work-out-large")
+        case "Film":
+            self.imageView.image = UIImage(named: "watch-movie-large")
+
+            
         default:
             self.imageView.image = UIImage(named: "letter")
         }
@@ -910,6 +941,14 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     }
     
     
+
+    //Instructions for user under searchbar
+    
+    @IBOutlet weak var instructionViewUnderSearchBar: UIViewX!
+    @IBOutlet weak var instructionLabel: UILabel!
+    @IBAction func closeInstructionView(_ sender: UIButton) {
+        self.instructionViewUnderSearchBar.isHidden = true
+    }
 }
 
 

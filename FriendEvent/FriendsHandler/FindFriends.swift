@@ -12,6 +12,8 @@ import FirebaseAuth
 
 
 class FindFriends: UITableViewController, UISearchResultsUpdating {
+    let PURPLE_COLOR = UIColor(hexString: "#8F6886")
+    
     /* The user Firebase reference */
     let USER_REF = Database.database().reference().child("users")
     
@@ -126,6 +128,24 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
         
         return cell
     }
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40
+    }
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        
+        
+        view.backgroundColor = PURPLE_COLOR
+        
+        let label = UILabel()
+        label.frame = CGRect(x: 20, y: 5, width: 300, height: 35)
+        label.text = "All users"
+        view.addSubview(label)
+        return view
+    }
+    
     
     @objc func pressButton(_ button: UIButton) {
         button.isHidden = true

@@ -91,25 +91,33 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
                 cell.nameLabel.text = mail
                 if key == CURRENT_USER_ID {
                     if (self.currentUserAnswer == "Comming"){
-                        cell.answerIcon.image = UIImage(named: "black-check-mark-hi")
+                        cell.answerIcon.image = UIImage(named: "check")
+                        cell.answerIcon.isHidden = false
                         cell.backgroundToCell.layer.borderColor = UIColor(red:0/255, green:255/255, blue:0/255, alpha: 1).cgColor
                     }
                     else if (self.currentUserAnswer == "No"){
-                        cell.answerIcon.image = UIImage(named: "cancel")
+                        cell.answerIcon.isHidden = false
+                        cell.answerIcon.image = UIImage(named: "cross")
                         
                         cell.backgroundToCell.layer.borderColor = UIColor(red:255/255, green:0/255, blue:0/255, alpha: 1).cgColor
                     }
                 }
                 else {
                 if(answer=="Comming"){
-                    cell.answerIcon.image = UIImage(named: "black-check-mark-hi")
+                    cell.answerIcon.image = UIImage(named: "check")
+                    cell.answerIcon.isHidden = false
                     cell.backgroundToCell.layer.borderColor = UIColor(red:0/255, green:255/255, blue:0/255, alpha: 1).cgColor
                 }
                 else if(answer=="No"){
-                    cell.answerIcon.image = UIImage(named: "cancel")
-                    
+                    cell.answerIcon.image = UIImage(named: "cross")
+                    cell.answerIcon.isHidden = false
                     cell.backgroundToCell.layer.borderColor = UIColor(red:255/255, green:0/255, blue:0/255, alpha: 1).cgColor
                 }
+                else {
+                    cell.answerIcon.isHidden = true
+                    cell.backgroundToCell.layer.borderColor = PURPLE_COLOR.cgColor
+                    }
+                    
                 }
             })
             
@@ -331,6 +339,31 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
             return "wine"
         case "Bio":
             return "popcorn"
+        case "Fotboll":
+            return "football-large"
+        case "Kaffe":
+            return "coffee-large"
+        case "TV-spel":
+            return "video-game_large"
+        case "Gymma":
+            return "gym-large"
+        case "Plugga":
+            return "study-large"
+        case "Party":
+            return "party-large"
+        case "Konsert":
+            return "consert-large"
+        case "Promenad":
+            return "walk-large"
+        case "Resa":
+            return "travel-large"
+        case "Spela spel":
+            return "board-game-large"
+        case "Träna":
+            return "work-out-large"
+        case "Film":
+            return "watch-movie-large"
+
         default:
             return "letter"
         }
@@ -683,6 +716,31 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     
     
     
+    @IBAction func getDirectionsButton(_ sender: UIButton) {
+        
+        if let latitude = event?.latitude{
+            if let longitude = event?.longitude{
+                let regionDistance: CLLocationDistance = 10000
+                let coordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                let regionSpan = MKCoordinateRegionMakeWithDistance(coordinates, regionDistance, regionDistance)
+                
+                
+                let options = [MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center), MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)]
+                let placemark = MKPlacemark(coordinate: coordinates)
+                let mapItem = MKMapItem(placemark: placemark)
+                mapItem.name = "Event adress"
+                mapItem.openInMaps(launchOptions: options)
+                
+                
+            }
+        }
+        else {
+            self.alert(title: "Location not available", message: "The location of the event is invalid")
+        }
+        
+       
+        
+    }
     
     
     
