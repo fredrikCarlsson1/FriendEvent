@@ -53,6 +53,13 @@ class EventList: UITableViewController {
         
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        removeUserObserver()
+    }
+    func removeUserObserver() {
+        USER_REF.removeAllObservers()
+    }
+    
     
     func eventObserver() {
         CURRENT_USER_EVENTS_REF.observe(DataEventType.value, with: { (snapshot) in
@@ -76,7 +83,7 @@ class EventList: UITableViewController {
                     
                     
                     if (self.checkDate(eventDate: timeStamp)){
-                         self.allEventsArray[0].events.append(event)
+                        self.allEventsArray[0].events.append(event)
                         
                         
                     }
@@ -217,8 +224,7 @@ class EventList: UITableViewController {
             cell.eventTypeImage.image = UIImage(named: "travel-small")
         case "Film":
             cell.eventTypeImage.image = UIImage(named: "watch-movie-small")
-        
-
+            
         default:
             cell.eventTypeImage.image = UIImage(named: "question-mark_small")
         }
@@ -250,6 +256,31 @@ class EventList: UITableViewController {
         view.addSubview(label)
         return view
     }
+    
+    
+    
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            print("Deleted")
+            
+            if let eventID = self.allEventsArray[indexPath.section].events[indexPath.row].eventId {
+                print(eventID)
+            
+                self.removeEvent(eventID)
+            }
+            self.allEventsArray[indexPath.section].events.remove(at: indexPath.row)
+            
+            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
+    }
+    
+    
+    func removeEvent(_ eventID: String) {
+        CURRENT_USER_REF.child("Events").child(eventID).removeValue()
+        
+    }
+    
     
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

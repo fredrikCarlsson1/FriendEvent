@@ -26,6 +26,7 @@
 		5C48149B207104F8008D8398 /* buttonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C48149A207104F8008D8398 /* buttonExtension.swift */; };
 		5C48149F2073A67E008D8398 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C48149E2073A67E008D8398 /* Messages.swift */; };
 		5C549A8B20626E9600B65096 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C549A8A20626E9600B65096 /* CanvasView.swift */; };
+		5C8783C42084DB2300E1F2F5 /* ShowPositionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8783C32084DB2300E1F2F5 /* ShowPositionCell.swift */; };
 		5C8BE79D207622170075E1E4 /* ViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8BE79C207622170075E1E4 /* ViewControllerExtensions.swift */; };
 		5C8BE7A3207696B20075E1E4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C8BE7A2207696B10075E1E4 /* Assets.xcassets */; };
 		5C8BE7A52076C75B0075E1E4 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8BE7A42076C75B0075E1E4 /* TabBarController.swift */; };
@@ -84,6 +85,7 @@
 		5C48149A207104F8008D8398 /* buttonExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = buttonExtension.swift; sourceTree = "<group>"; };
 		5C48149E2073A67E008D8398 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		5C549A8A20626E9600B65096 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
+		5C8783C32084DB2300E1F2F5 /* ShowPositionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowPositionCell.swift; sourceTree = "<group>"; };
 		5C8BE79C207622170075E1E4 /* ViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerExtensions.swift; sourceTree = "<group>"; };
 		5C8BE7A2207696B10075E1E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5C8BE7A42076C75B0075E1E4 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				5CFB4F02205FDACD00D3C8F0 /* ReusableButtonCell.swift */,
 				5CFB4F062060608B00D3C8F0 /* TitleCell.swift */,
 				5C07AEE2205AB81600D961DE /* User.swift */,
+				5C48149E2073A67E008D8398 /* Messages.swift */,
 				5C8BE7A62077A3F40075E1E4 /* EventHandler */,
 				5C07AEED205BDFC900D961DE /* FriendsHandler */,
 				5C03F9C0204D5D55000DFD08 /* Main.storyboard */,
@@ -239,7 +242,6 @@
 				5CB11FCD2067EB96006D3FB5 /* EventPopUP.swift */,
 				5CAAB29A2077BCD600EC2830 /* InvitedFriendsCell.swift */,
 				5CAAB29C2077BCF400EC2830 /* MessageCell.swift */,
-				5C48149E2073A67E008D8398 /* Messages.swift */,
 			);
 			path = EventPopUp;
 			sourceTree = "<group>";
@@ -268,6 +270,7 @@
 				5CB6DDB5207E4EC30062BF8D /* emailCell.swift */,
 				5CB6DDB7207E4ED30062BF8D /* nameCell.swift */,
 				5CB6DDB9207E4EE30062BF8D /* passwordCell.swift */,
+				5C8783C32084DB2300E1F2F5 /* ShowPositionCell.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -484,6 +487,7 @@
 				5C07AEEB205BDF8100D961DE /* FriendRequestTableCell.swift in Sources */,
 				5C07AEEF205BF7B000D961DE /* MyFriends.swift in Sources */,
 				5CAAB2A12077DCCB00EC2830 /* StartViewCells.swift in Sources */,
+				5C8783C42084DB2300E1F2F5 /* ShowPositionCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

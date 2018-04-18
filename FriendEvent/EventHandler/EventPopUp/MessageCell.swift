@@ -17,6 +17,7 @@ class MessageCell: UICollectionViewCell {
         tV.translatesAutoresizingMaskIntoConstraints = false
         tV.backgroundColor = UIColor.clear
         tV.isEditable = false
+        tV.isScrollEnabled = false
         return tV
     }()
     
@@ -44,16 +45,23 @@ class MessageCell: UICollectionViewCell {
     var bubbleViewLeftAnchor: NSLayoutConstraint?
     var greyTopAnchor: NSLayoutConstraint?
     var blueTopAnchor: NSLayoutConstraint?
+    var userLabelRightAnchor: NSLayoutConstraint?
+    var userLabelLeftAnchor: NSLayoutConstraint?
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
         addSubview(bubbleView)
         addSubview(textView)
         addSubview(userLabel)
         
         
-        userLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 18).isActive = true
+        userLabelRightAnchor = userLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant:
+            -22)
+        userLabelRightAnchor?.isActive = false
+        
+        userLabelLeftAnchor = userLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 18)
+        userLabelLeftAnchor?.isActive = true
+        
         userLabel.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         userLabel.widthAnchor.constraint(equalToConstant: 150).isActive = true
         userLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
@@ -62,11 +70,11 @@ class MessageCell: UICollectionViewCell {
         
         bubbleViewRightAnchor?.isActive = true
         
-        bubbleViewLeftAnchor = bubbleView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10)
+        bubbleViewLeftAnchor = bubbleView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 12)
         
         bubbleViewLeftAnchor?.isActive = false
         
-        blueTopAnchor = bubbleView.topAnchor.constraint(equalTo: self.topAnchor)
+        blueTopAnchor = bubbleView.topAnchor.constraint(equalTo: userLabel.bottomAnchor)
         blueTopAnchor?.isActive = true
         
         greyTopAnchor = bubbleView.topAnchor.constraint(equalTo: userLabel.bottomAnchor)
@@ -86,8 +94,6 @@ class MessageCell: UICollectionViewCell {
         textView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor).isActive = true
         
         textView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
-        
-        //        textView.widthAnchor.constraint(equalToConstant: 200).isActive = true
         
         textView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor).isActive = true
         

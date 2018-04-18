@@ -14,9 +14,13 @@ class StartViewCells: UITableViewCell {
     
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var profilePicture: UIImageViewX!
+    @IBOutlet weak var sendPrivateMessageButton: UIButtonX!
+
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
+     //   sendPrivateMessageButton.transform = CGAffineTransform(scaleX: 0, y: 0)
         // Initialization code
     }
 

@@ -43,6 +43,7 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Do any additional setup after loading the view.
     }
     
+
     let PURPLE_COLOR = UIColor(hexString: "#8F6886")
     
     /** Gets the User object for the specified user id */
@@ -51,7 +52,7 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
             let email = snapshot.childSnapshot(forPath: "Email").value as! String
             let id = snapshot.key
             let name = snapshot.childSnapshot(forPath: "username").value as! String
-            completion(User(email: email, userID: id, name: name))
+            completion(User(email: email, userID: id, name: name, privateMessages: nil))
         })
     }
     
@@ -78,10 +79,12 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
     // Accepts a friend request from the user with the specified id
     @objc func acceptFriendRequest(_ userID: String) {
         CURRENT_USER_REF.child("requests").child(userID).removeValue()
-        CURRENT_USER_REF.child("friends").child(userID).setValue(true)
-        USER_REF.child(userID).child("friends").child(CURRENT_USER_ID).setValue(true)
+        CURRENT_USER_REF.child("friends").child(userID).child("messages").setValue(true)
+        CURRENT_USER_REF.child("friends").child(userID).child("newMessage").setValue(false)
+        USER_REF.child(userID).child("friends").child(CURRENT_USER_ID).child("newMessage").setValue(false)
+        USER_REF.child(userID).child("friends").child(CURRENT_USER_ID).child("messages").setValue(true)
         USER_REF.child(userID).child("requests").child(CURRENT_USER_ID).removeValue()
-        addRequestObserver()
+        //addRequestObserver()
 
     }
     

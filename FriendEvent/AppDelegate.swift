@@ -23,26 +23,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var window: UIWindow?
     var locationManager = CLLocationManager()
     static var locationPlace: CLLocationCoordinate2D?
+    static var showPosition: Bool?
     
     //MARK: VARIBLES TO SEND NOTIFICATIONS
     static let NOTIFICATION_URL = "https://gcm-http.googleapis.com/gcm/send"
     static var DEVICEID = String()
     static let SERVERKEY = "AAAAz7Aias4:APA91bHd16tDokkhAGfv1wDozUOf91FLcNY5IaAm8iUcPfS0giVqYoKZ25mZySMTboKfODYt4paapm1W6I-IrlAhbDwrdPspscLpyRq01vW0j6nrpORQSxrHwDQO6hHREan7DxgT0CNU"
-    
-    
+
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
+        FirebaseApp.configure()
         
         // Ask for userlocation allways/when in use/never
         locationManager.delegate = self
         locationManager.requestAlwaysAuthorization()
         locationManager.startUpdatingLocation()
+        willUserShowPosition()
         
         
-        FirebaseApp.configure()
-        
-        //Notofications
+        //Send and recive Notofications
         if #available (iOS 10.0, *){
             UNUserNotificationCenter.current().delegate = self
             let option: UNAuthorizationOptions = [.alert, .badge, .sound]
@@ -55,7 +55,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         application.registerForRemoteNotifications()
-        UIApplication.shared.applicationIconBadgeNumber = 0
+        
+        
         
         //Facebook
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
@@ -71,27 +72,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return handled
     }
     
-    var latitude: Double = 0.0
-    var longitude: Double = 0.0
-    
     //Get user location
+    
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[0]
-        AppDelegate.locationPlace = location.coordinate
-        
-        ////////// Code to update location
-        
-        let locValue:CLLocationCoordinate2D = manager.location!.coordinate
-        
-        self.latitude = locValue.latitude
-        self.longitude = locValue.longitude
-        
-        
-        
-        //////////
-        
+            AppDelegate.locationPlace = location.coordinate
+       
     }
     
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        UIApplication.shared.applicationIconBadgeNumber = 0
+    }
+    
+    
+    func willUserShowPosition() {
+        let id = Auth.auth().currentUser?.uid
+        let USER_REF = Database.database().reference().child("users")
+
+        USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
+            if let id = id{
+                if snapshot.hasChild(id){
+                    
+                    var CURRENT_USER_REF: DatabaseReference {
+                        let id = Auth.auth().currentUser!.uid
+                        return USER_REF.child("\(id)")
+                    }
+                    CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snap) in
+                        if snap.childSnapshot(forPath: "showPosition").value as? Bool == true{
+                            AppDelegate.showPosition = true
+                        }
+                        else {
+                            AppDelegate.showPosition = false
+                        }
+                    })
+                }
+            }else{
+                print("user dosnt exist")
+            }
+        })
+    }
     
     // FOR SINGLE DEVICE MESSAGE
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
@@ -111,27 +131,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         completionHandler()
         
     }
-    
+   
+    //Runs when moved out from app
     var timer = Timer()
     
+
     
-    
-    
-    //Runs when moved out from app
     func applicationDidEnterBackground(_ application: UIApplication) {
         Messaging.messaging().shouldEstablishDirectChannel = false
-        
+
         if CLLocationManager.locationServicesEnabled(){
             switch CLLocationManager.authorizationStatus() {
             case .notDetermined, .restricted, .denied:
                 print("No access")
             case .authorizedAlways, .authorizedWhenInUse:
-                print("Access")
-                locationManager.allowsBackgroundLocationUpdates = true
-                locationManager.pausesLocationUpdatesAutomatically = false
-                print("hej")
-                timer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(AppDelegate.updatePositionInBackground), userInfo: nil, repeats: true)
-                doBackgroundTask()
+                if let showPos = AppDelegate.showPosition {
+                    if showPos == true {
+                        locationManager.allowsBackgroundLocationUpdates = true
+                        locationManager.pausesLocationUpdatesAutomatically = false
+                        locationManager.startMonitoringSignificantLocationChanges()
+                        
+                        timer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(AppDelegate.updatePositionInBackground), userInfo: nil, repeats: true)
+                        doBackgroundTask()
+                    }
+                    else{
+                        
+                    }
+                    
+                }
             }
         }
         else {
@@ -152,7 +179,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
             if let id = id{
                 if snapshot.hasChild(id){
-                    
                     var CURRENT_USER_REF: DatabaseReference {
                         let id = Auth.auth().currentUser!.uid
                         return USER_REF.child("\(id)")
@@ -160,13 +186,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     let values = ["latitude": latitude, "longitude": longitude] as [String : Any]
                     
                     CURRENT_USER_REF.updateChildValues(values)
+                            print("position Updated")
                 }
             }else{
                 print("user dosnt exist")
             }
-            
         })
-        
     }
     
     func doBackgroundTask() {
@@ -177,16 +202,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func beginBackgroundUpdateTask() {
-        
         UIApplication.shared.beginBackgroundTask(expirationHandler: {
             self.timer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(AppDelegate.updatePositionInBackground), userInfo: nil, repeats: true)
+            self.locationManager.startUpdatingLocation()
             print("beginBackgroundUpdateTask1")
         })
     }
     
+    
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         guard let token = InstanceID.instanceID().token() else {return}
-        
         AppDelegate.DEVICEID = token
         connectToFCM()
     }
@@ -194,6 +219,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func connectToFCM(){
         Messaging.messaging().shouldEstablishDirectChannel = true
     }
+    
     
     
     func applicationDidBecomeActive(_ application: UIApplication) {

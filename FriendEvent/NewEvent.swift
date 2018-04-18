@@ -161,6 +161,13 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
         zoomInOnLocation()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        removeUserObserver()
+    }
+    func removeUserObserver() {
+        USER_REF.removeAllObservers()
+    }
+    
     //MARK: MAP FUNCTIONS
     func zoomInOnLocation() {
         
@@ -510,7 +517,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
             let email = snapshot.childSnapshot(forPath: "Email").value as! String
             let id = snapshot.key
             let name = snapshot.childSnapshot(forPath: "username").value as! String
-            completion(User(email: email, userID: id, name: name))
+            completion(User(email: email, userID: id, name: name, privateMessages: nil))
         })
     }
     
@@ -561,7 +568,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
     
     //MARK: SEND INVITATION
     func sendInvite(){
-        let host = User(email: CURRENT_USER_EMAIL, userID: CURRENT_USER_ID, name: CURRENT_USERNAME!)
+        let host = User(email: CURRENT_USER_EMAIL, userID: CURRENT_USER_ID, name: CURRENT_USERNAME!, privateMessages: nil)
         
         if(titleTextField.text != ""){
             if(selectedFriends.count != 0){

@@ -62,6 +62,8 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
+    
+
     var otherUser: NSDictionary?
     
     
@@ -70,7 +72,7 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
             let email = snapshot.childSnapshot(forPath: "Email").value as! String
             let id = snapshot.key as String
             let name = snapshot.childSnapshot(forPath: "username").value as! String
-            let user = User(email: email, userID: id, name: name)
+            let user = User(email: email, userID: id, name: name, privateMessages: nil)
             
             if (self.CURRENT_USER_ID != id){
                 

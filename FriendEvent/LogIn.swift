@@ -10,6 +10,7 @@ import UIKit
 import FirebaseAuth
 import Firebase
 import FBSDKLoginKit
+import CoreLocation
 
 
 class LogIn: UIViewController {
@@ -21,7 +22,8 @@ class LogIn: UIViewController {
     @IBOutlet weak var signUpButtonOutlet: UIButtonX!
     @IBOutlet weak var facebookSignUpButtonOutlet: UIButtonX!
     @IBOutlet weak var forgotPasswordHaveAccountOutlet: UIButton!
-    
+    @IBOutlet weak var startUpView: UIView!
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,15 +32,24 @@ class LogIn: UIViewController {
             if user != nil{
                 self.performSegue(withIdentifier: "loginSegue", sender: self)
             }
+            else {
+                self.startUpView.isHidden = true
+            }
         }
     }
-    
+
     //MARK: LoginButton - changes to Create user when SIGN UP button is pressed
     @IBAction func loginButton(_ sender: UIButton) {
         guard let email = emailTextField.text else {return}
         guard let password = passwordTextField.text else {return}
-        guard let latitude = AppDelegate.locationPlace?.latitude else {return}
-        guard let longitude = AppDelegate.locationPlace?.longitude else {return}
+        var latitude: Double = 0
+        var longitude: Double = 0
+        if let latitude1 = AppDelegate.locationPlace?.latitude{
+            latitude = latitude1
+        }
+        if let longitude1 = AppDelegate.locationPlace?.longitude{
+            longitude = longitude1
+        }
         
         if (emailTextField.text != nil && passwordTextField.text != nil){
             if (loginButtonOutlet.titleLabel?.text == "Login"){ //Log in
@@ -70,7 +81,7 @@ class LogIn: UIViewController {
                     Auth.auth().createUser(withEmail: email, password: password, completion: { (user, error) in
                         if (user != nil){
                             guard let uid = user?.uid else {return}
-                            let values = ["Email": email, "fromDevice": AppDelegate.DEVICEID, "username": username] as [String : Any]
+                            let values = ["Email": email, "fromDevice": AppDelegate.DEVICEID, "username": username, "showPosition": true, "latitude": latitude, "longitude": longitude] as [String : Any]
                             let ref = Database.database().reference().child("users").child(uid)
                             ref.updateChildValues(values)
                             self.alert(title: "Successfully registered!", message: "Welcome to Quick Inviter!")
@@ -97,9 +108,7 @@ class LogIn: UIViewController {
         }
     }
     
-    //
     @IBAction func signUpButtonPressed(_ sender: UIButtonX) {
-        
         usernameOutlet.isHidden = false
         loginButtonOutlet.setTitle("Create user", for: .normal)
         signUpButtonOutlet.isHidden = true
@@ -120,11 +129,9 @@ class LogIn: UIViewController {
         else {
             
         }
-        
     }
     
-    
-    
+    //Sign up and sign in with facebook
     @IBAction func signInWithFacebookButton(_ sender: UIButton) {
         let fbLoginManager = FBSDKLoginManager()
         fbLoginManager.logIn(withReadPermissions: ["public_profile", "email"], from: self) { (result, error) in
@@ -139,8 +146,7 @@ class LogIn: UIViewController {
             }
             
             let credential = FacebookAuthProvider.credential(withAccessToken: accessToken.tokenString)
-            
-            
+ 
             // Perform login by calling Firebase APIs
             Auth.auth().signIn(with: credential, completion: { (user, error) in
                 if let error = error {
@@ -158,27 +164,34 @@ class LogIn: UIViewController {
                     let userEmail = currentUser.email
                     let userName = currentUser.displayName
                     
-                    guard let latitude = AppDelegate.locationPlace?.latitude else {return}
-                    guard let longitude = AppDelegate.locationPlace?.longitude else {return}
+                    var latitude: Double = 0
+                    var longitude: Double = 0
+                    if let latitude1 = AppDelegate.locationPlace?.latitude{
+                        latitude = latitude1
+                    }
+                    if let longitude1 = AppDelegate.locationPlace?.longitude{
+                        longitude = longitude1
+                    }
+                    
+                   // guard let latitude = AppDelegate.locationPlace?.latitude else {return}
+                   // guard let longitude = AppDelegate.locationPlace?.longitude else {return}
                     
                     
-                    let values = ["username": userName!, "Email": userEmail!, "fromDevice": AppDelegate.DEVICEID, "latitude": latitude, "longitude": longitude] as [String : Any]
+                    let values = ["username": userName!, "Email": userEmail!, "fromDevice": AppDelegate.DEVICEID, "latitude": latitude, "longitude": longitude, "showPosition": true] as [String : Any]
                     
                     let ref = Database.database().reference().child("users").child(currentUser.uid)
                     
                     ref.updateChildValues(values)
                 }
                 // Present the main view
+               
                 self.performSegue(withIdentifier: "loginSegue", sender: self)
             })
             
         }
     }
     
-    
-    
-    
-   
+  
     
 }
 

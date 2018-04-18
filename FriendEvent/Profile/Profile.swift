@@ -10,16 +10,13 @@ import UIKit
 import CoreLocation
 import Firebase
 
+
 class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource{
     @IBOutlet weak var newPasswordView: UIView!
-    
     @IBOutlet weak var oldPasswordTextField: UITextField!
     @IBOutlet weak var newPasswordTextField: UITextField!
-    
     @IBOutlet weak var closeNewPasswordViewOutlet: UIButton!
-    
     @IBOutlet weak var usernameTextField: UITextField!
-    
     @IBOutlet weak var usernameView: UIView!
     
     
@@ -58,10 +55,8 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
         return 1
     }
     
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 4
-        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -85,7 +80,35 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
             return cell
         }
         else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "showLocationCell", for: indexPath)
+            let cell = tableView.dequeueReusableCell(withIdentifier: "showLocationCell", for: indexPath) as! ShowPositionCell
+          
+            if CLLocationManager.locationServicesEnabled(){
+                switch CLLocationManager.authorizationStatus() {
+                case .notDetermined, .restricted, .denied:
+                    CURRENT_USER_REF.child("showPosition").setValue(false)
+                    
+                    cell.showPositionSwitch.isOn = false
+                case .authorizedAlways, .authorizedWhenInUse:
+                    CURRENT_USER_REF.observeSingleEvent(of: .value, with: { (snapshot) in
+                        
+                        let showMyPosition = snapshot.childSnapshot(forPath: "showPosition").value as! Bool
+                        
+                        if showMyPosition == true {
+                            cell.showPositionSwitch.isOn = true
+                        }
+                        else {
+                             cell.showPositionSwitch.isOn = false
+                        }
+                        
+                    })
+                    
+                }
+            }
+            else {
+                print("no background updates")
+            }
+
+            
             
             return cell
         }
@@ -190,7 +213,32 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
     }
     
     
-    
+    @IBAction func showMyLocationSwitch(_ sender: UISwitch) {
+        switch CLLocationManager.authorizationStatus() {
+        case .notDetermined, .restricted, .denied:
+            let alert = UIAlertController(title: "Need Authorization", message: "You need to allow the app use your location in order for your friends to get your position", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: "Settings", style: .default, handler: { _ in
+                let url = URL(string: UIApplicationOpenSettingsURLString)!
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }))
+            self.present(alert, animated: true, completion: nil)
+        case .authorizedAlways, .authorizedWhenInUse:
+            break
+        }
+
+        if sender.isOn{
+            CURRENT_USER_REF.child("showPosition").setValue(true)
+            AppDelegate.showPosition = true
+        }
+        else {
+            CURRENT_USER_REF.child("showPosition").setValue(false)
+            CURRENT_USER_REF.child("longitude").setValue(0)
+            CURRENT_USER_REF.child("latitude").setValue(0)
+            AppDelegate.showPosition = false
+        }
+    }
+
     
 }
 

@@ -14,10 +14,10 @@ import Alamofire
 
 class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITextFieldDelegate {
     
-    
     let PURPLE_COLOR = UIColor(hexString: "#8F6886")
-   
+    
     var currentUserAnswer = "TBA"
+    var currentUserName = "No-name"
     
     @IBOutlet weak var closeListenViewButtonOutlet: UIButtonX!
     @IBOutlet weak var micView: UIViewX!
@@ -29,12 +29,27 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         return id
     }
     
+    var CURRENT_USERNAME: String?
+    
+    func setCurrentUserName (){
+        CURRENT_USER_REF.observeSingleEvent(of: .value) { (snapshot) in
+            let name = snapshot.childSnapshot(forPath: "username").value as! String
+            self.CURRENT_USERNAME = name
+        }
+    }
+    
     var storageReference: StorageReference{
         return Storage.storage().reference().child("storage")
     }
     var audioReference: StorageReference{
         return Storage.storage().reference().child("storage").child("sound")
     }
+    
+    
+    @IBOutlet weak var guestbookCollectionView: UICollectionView!
+    
+    
+    var messageArray = [Messages]()
     
     let geoCoder = CLGeocoder()
     var annotationLocation: CLLocation?
@@ -60,7 +75,15 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
                 cell.bubbleViewLeftAnchor?.isActive = false
                 cell.blueTopAnchor?.isActive = true
                 cell.greyTopAnchor?.isActive = false
-                cell.userLabel.isHidden = true
+                cell.userLabelLeftAnchor?.isActive = false
+                cell.userLabelRightAnchor?.isActive = true
+                cell.userLabel.isHidden = false
+                if let username = CURRENT_USERNAME {
+                    cell.userLabel.text = username
+                } else {
+                    cell.userLabel.text = "Me"
+                }
+                cell.userLabel.textAlignment = .right
             }
             else {
                 cell.bubbleView.backgroundColor = UIColor.lightGray
@@ -69,6 +92,9 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
                 cell.blueTopAnchor?.isActive = false
                 cell.greyTopAnchor?.isActive = true
                 cell.userLabel.isHidden = false
+                cell.userLabelLeftAnchor?.isActive = true
+                cell.userLabelRightAnchor?.isActive = false
+                cell.userLabel.textAlignment = .left
                 for friend in (event?.invitedFriends)!{
                     let _ = friend.map({ (key, value) -> Void in
                         if key == messageArray[indexPath.row].ID{
@@ -79,17 +105,18 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
                     })
                 }
             }
-            cell.bubbleWidthAnchor?.constant = estimatedHeightForText(text: messageArray[indexPath.row].message).width + 32
+            cell.bubbleWidthAnchor?.constant = estimatedHeightForText(text: messageArray[indexPath.row].message).width + 30
             return cell
             
         }
         let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: "invitedFriendsCell", for: indexPath) as! InvitedFriendsCell
         
         let _ = event?.invitedFriends[indexPath.row].map({ (key, value) -> Void in
-
+            
             let _ = value.map({ (mail, answer) -> Void in
                 cell.nameLabel.text = mail
                 if key == CURRENT_USER_ID {
+                    self.currentUserName = mail
                     if (self.currentUserAnswer == "Comming"){
                         cell.answerIcon.image = UIImage(named: "check")
                         cell.answerIcon.isHidden = false
@@ -103,19 +130,19 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
                     }
                 }
                 else {
-                if(answer=="Comming"){
-                    cell.answerIcon.image = UIImage(named: "check")
-                    cell.answerIcon.isHidden = false
-                    cell.backgroundToCell.layer.borderColor = UIColor(red:0/255, green:255/255, blue:0/255, alpha: 1).cgColor
-                }
-                else if(answer=="No"){
-                    cell.answerIcon.image = UIImage(named: "cross")
-                    cell.answerIcon.isHidden = false
-                    cell.backgroundToCell.layer.borderColor = UIColor(red:255/255, green:0/255, blue:0/255, alpha: 1).cgColor
-                }
-                else {
-                    cell.answerIcon.isHidden = true
-                    cell.backgroundToCell.layer.borderColor = PURPLE_COLOR.cgColor
+                    if(answer=="Comming"){
+                        cell.answerIcon.image = UIImage(named: "check")
+                        cell.answerIcon.isHidden = false
+                        cell.backgroundToCell.layer.borderColor = UIColor(red:0/255, green:255/255, blue:0/255, alpha: 1).cgColor
+                    }
+                    else if(answer=="No"){
+                        cell.answerIcon.image = UIImage(named: "cross")
+                        cell.answerIcon.isHidden = false
+                        cell.backgroundToCell.layer.borderColor = UIColor(red:255/255, green:0/255, blue:0/255, alpha: 1).cgColor
+                    }
+                    else {
+                        cell.answerIcon.isHidden = true
+                        cell.backgroundToCell.layer.borderColor = PURPLE_COLOR.cgColor
                     }
                     
                 }
@@ -161,6 +188,8 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         return USER_REF.child("\(id)")
     }
     
+    
+    
     var CURRENT_USER_EVENTS_REF: DatabaseReference {
         return CURRENT_USER_REF.child("Events")
     }
@@ -199,18 +228,20 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setCurrentUserName()
+        
         self.sendMessageTextField.delegate = self
         self.hideKeyboardWhenTappedAround()
         setupKeyboardObservers()
-    self.closeListenViewButtonOutlet.roundCorners(corners: .topLeft, radius: 10)
-    
+        self.closeListenViewButtonOutlet.roundCorners(corners: .topLeft, radius: 10)
+        
         self.micView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
-       
-        getMessages()
+        
+        guestbookCollectionView.alwaysBounceVertical = true
+        
         guestbookCollectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         scrollDownToBottom()
         
-        guestbookCollectionView.alwaysBounceVertical = true
         invitationViewButtonOutlet.roundCorners(corners: [.topLeft], radius: 20)
         guestBookViewButtonOutlet.roundCorners(corners: [.topRight], radius: 20)
         
@@ -275,7 +306,7 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
                 // print("Answer: \(answerValue))")
                 
                 if key == self.CURRENT_USER_ID {
-
+                    
                     if answerValue == "Comming"{
                         self.acceptButtonPressed()
                         self.currentUserAnswer = "Comming"
@@ -289,11 +320,11 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
                     self.invitedFriendsCollectionView.reloadData()
                 }
             }
-  
+            
         })
     }
-
-
+    
+    
     func scrollDownToBottom(){
         guestbookCollectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 5, right: 0)
     }
@@ -363,13 +394,13 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
             return "work-out-large"
         case "Film":
             return "watch-movie-large"
-
+        case "Drink":
+            return "drink-large"
+            
         default:
             return "letter"
         }
     }
-    
-    
     
     func setHasBeenRead(eventID: String) {
         CURRENT_USER_EVENTS_REF.child(eventID).updateChildValues(["hasBeenRead" : true])
@@ -384,16 +415,12 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     }
     
     
-    
-    
-
-    
     //MARK: Mic sound functions
     @IBAction func microphoneButton(_ sender: UIButton) {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.curveEaseIn], animations: {
             self.micView.transform = .identity
         }, completion: nil)
-    
+        
     }
     
     @IBAction func closeListenViewButton(_ sender: UIButton) {
@@ -544,14 +571,15 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     @IBAction func guestBookViewButton(_ sender: UIButton) {
         
         //   Tell firebase that current user read latest guestbook post
+        self.observeGuestbookMessages()
         Database.database().reference().child("Events").child((event?.eventReference)!).child("invitedFriends").child(CURRENT_USER_ID).updateChildValues(["newTextMessage" : false])
         
         
-        if messageArray.count != 0{
-            let indexPath = IndexPath(row: messageArray.count-1, section: 0)
-            self.guestbookCollectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
-        }
-        
+        //        if messageArray.count != 0{
+        //            let indexPath = IndexPath(row: messageArray.count-1, section: 0)
+        //            self.guestbookCollectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
+        //        }
+        //
         guestBookView.isHidden = false
         self.guestbookCollectionView.reloadData()
         self.invitationViewButtonOutlet.backgroundColor = UIColor.white
@@ -594,11 +622,7 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     
     // MARK: - SEND PUSH NOTIFICATIONS
     func sendPushNotification(key: String){
-        //        Database.database().reference().child("users").observeSingleEvent(of: .value) { (snapshot) in
-        //            guard let dictionary = snapshot.value as? [String:Any] else {return}
-        //
-        //            dictionary.forEach({ (key, value) in
-        //
+        
         guard let uid = Auth.auth().currentUser?.uid else {return}
         if (key != uid){
             let ref = Database.database().reference().child("messages").child(uid)
@@ -610,8 +634,7 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
             
             self.fetchMessage(toID: key)
         }
-        //            })
-        //        }
+        
     }
     
     func fetchMessage(toID: String){
@@ -624,9 +647,10 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     }
     
     func setUpPushNotification(fromDevice: String){
-        let message = "\("XXX") wrote a message in the guestbook!"
         
-        let title = "Quick Inviter"
+        let message = "\(currentUserName) wrote a message in the guestbook!"
+        
+        let title = "New textbook message"
         let body = message
         let toDeviceID = fromDevice
         var headers: HTTPHeaders =   HTTPHeaders()
@@ -677,45 +701,8 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
             self.sendMessageTextField.text = ""
         }
     }
-    
-    func getMessages(){
-        
-        let ref = Database.database().reference().child("Events").child((event?.eventReference)!).child("guestBook")
-        
-        ref.observe(DataEventType.value, with: { (snapshot) in
-            self.messageArray.removeAll()
-            for child in snapshot.children.allObjects as! [DataSnapshot] {
-                let id = child.key
-                
-                self.getGuestbookMessages(id: id, completion: { (message) in
-                    self.messageArray.append(message)
-                    self.guestbookCollectionView.reloadData()
-                })
-            }
-        })
-    }
-    
-    
-    func getGuestbookMessages(id: String, completion: @escaping (Messages) -> Void) {
-        let ref = Database.database().reference().child("Events").child((event?.eventReference)!).child("guestBook").child(id)
-        
-        ref.observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-            let id = snapshot.childSnapshot(forPath: "from").value as! String
-            let message = snapshot.childSnapshot(forPath: "text").value as! String
-            let timeStamp = snapshot.childSnapshot(forPath: "timeStamp").value as! Int
-            
-            completion(Messages(id: id, message: message, timeStamp: timeStamp))
-        })
-    }
-    
-    
-    @IBOutlet weak var guestbookCollectionView: UICollectionView!
-    
-    
-    var messageArray = [Messages]()
-    
-    
-    
+
+   
     @IBAction func getDirectionsButton(_ sender: UIButton) {
         
         if let latitude = event?.latitude{
@@ -738,8 +725,24 @@ class EventPopUP: UIViewController, UICollectionViewDelegate, UICollectionViewDa
             self.alert(title: "Location not available", message: "The location of the event is invalid")
         }
         
-       
+    }
+    
+    
+    func observeGuestbookMessages() {
         
+        let commentsRef = Database.database().reference().child("Events").child((event?.eventReference!)!).child("guestBook")
+        self.messageArray.removeAll()
+        commentsRef.observe(.childAdded, with: { (snapshot) -> Void in
+            let text = snapshot.childSnapshot(forPath: "text").value as! String
+            print(text)
+            let time = snapshot.childSnapshot(forPath: "timeStamp").value as! Int
+            let from = snapshot.childSnapshot(forPath: "from").value as! String
+            let newMessage = Messages(id: from, message: text, timeStamp: time)
+            self.messageArray.append(newMessage)
+            self.guestbookCollectionView.reloadData()
+            let lastItemIndex = IndexPath(item: (self.messageArray.count)-1, section: 0)
+            self.guestbookCollectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: false)
+        })
     }
     
     

@@ -42,7 +42,8 @@ class MyFriends: UITableViewController, CLLocationManagerDelegate {
         self.tableView.rowHeight = 60
         addFriendObserver()
     }
-    
+
+   
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -118,7 +119,7 @@ class MyFriends: UITableViewController, CLLocationManagerDelegate {
             let longitude = snapshot.childSnapshot(forPath: "longitude").value as! Double
             let distance = self.getDistance(latitude: latitude, longitude: longitude)
             
-            completion(User(email: email, userID: id, name: name, latitude: latitude, longitude: longitude, distance: distance))
+            completion(User(email: email, userID: id, name: name, latitude: latitude, longitude: longitude, distance: distance, privateMessages: nil))
         })
     }
     
