@@ -12,7 +12,7 @@ import FirebaseAuth
 
 class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var requestList = [User]()
-    
+    let PURPLE_COLOR = UIColor(hexString: "#8F6886")
     @IBOutlet weak var tableView: UITableView!
     
     /* The user Firebase reference */
@@ -22,7 +22,6 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
     var CURRENT_USER_REF: DatabaseReference {
         let id = Auth.auth().currentUser!.uid
         return USER_REF.child("\(id)")
-        
     }
     
     /** The Firebase reference to the current user's friend request tree */
@@ -37,14 +36,8 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        addRequestObserver ()
-
-        
-        // Do any additional setup after loading the view.
+        addRequestObserver()
     }
-    
-
-    let PURPLE_COLOR = UIColor(hexString: "#8F6886")
     
     /** Gets the User object for the specified user id */
     func getUser(_ userID: String, completion: @escaping (User) -> Void) {
@@ -131,13 +124,11 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         let label = UILabel()
         label.frame = CGRect(x: 20, y: 5, width: 300, height: 35)
-        label.text = "My friendsrequests"
+        label.text = "My friend requests"
         view.addSubview(label)
         return view
     }
-
-    
-    
+ 
     @objc func acceptButton(_ button: UIButton) {
         acceptFriendRequest(requestList[button.tag].id)
     }

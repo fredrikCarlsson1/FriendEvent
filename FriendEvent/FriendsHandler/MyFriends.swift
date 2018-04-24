@@ -14,6 +14,7 @@ import MapKit
 
 
 class MyFriends: UITableViewController, CLLocationManagerDelegate {
+    @IBOutlet var friendsTableView: UITableView!
     
     let USER_REF = Database.database().reference().child("users")
     var CURRENT_USER_REF: DatabaseReference {
@@ -29,10 +30,7 @@ class MyFriends: UITableViewController, CLLocationManagerDelegate {
     }
     
     let PURPLE_COLOR = UIColor(hexString: "#8F6886")
-    
-    @IBOutlet var friendsTableView: UITableView!
     var friendLists = [User]()
-    
     var myLongitude: Double = 0
     var myLatitude: Double = 0
     
@@ -42,15 +40,8 @@ class MyFriends: UITableViewController, CLLocationManagerDelegate {
         self.tableView.rowHeight = 60
         addFriendObserver()
     }
-
-   
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     // MARK: - Table view data source
-    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -78,7 +69,7 @@ class MyFriends: UITableViewController, CLLocationManagerDelegate {
                 self.myLatitude = user.latitude
                 print(self.myLongitude)
                 print(self.myLatitude)
-             
+                
             })
             
             // If there are no children, run completion here instead
@@ -126,12 +117,12 @@ class MyFriends: UITableViewController, CLLocationManagerDelegate {
     func getDistance(latitude: Double, longitude: Double) -> Int{
         let friendLocation = CLLocation(latitude: latitude, longitude: longitude)
         if myLongitude != 0 && myLatitude != 0{
-        let myLocation = CLLocation(latitude: self.myLatitude, longitude: self.myLongitude)
-    
-        let distanceInMeters = friendLocation.distance(from: myLocation)
-        
-        print(myLocation)
-        return Int(distanceInMeters*0.001)
+            let myLocation = CLLocation(latitude: self.myLatitude, longitude: self.myLongitude)
+            
+            let distanceInMeters = friendLocation.distance(from: myLocation)
+            
+            print(myLocation)
+            return Int(distanceInMeters*0.001)
         }
         else {
             return 0
@@ -145,10 +136,10 @@ class MyFriends: UITableViewController, CLLocationManagerDelegate {
         cell.nameLabel.text = friendLists[indexPath.row].name
         cell.emailLabel.text = friendLists[indexPath.row].email
         if (friendLists[indexPath.row].longitude != 0 && friendLists[indexPath.row].latitude != 0) {
-        cell.distanceLabel.text =  String(friendLists[indexPath.row].distance)
+            cell.distanceLabel.text =  String(friendLists[indexPath.row].distance)
         }
-            else {
-              cell.distanceLabel.text = "-"
+        else {
+            cell.distanceLabel.text = "-"
         }
         return cell
     }

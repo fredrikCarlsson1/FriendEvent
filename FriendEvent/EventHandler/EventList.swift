@@ -10,7 +10,6 @@ import UIKit
 import Firebase
 
 class EventList: UITableViewController {
-    
     struct AllEvents {
         let title: String!
         var events: [Event]!
@@ -18,11 +17,10 @@ class EventList: UITableViewController {
     var allEventsArray = [AllEvents]()
     
     let PURPLE_COLOR = UIColor(hexString: "#8F6886")
-    
     var eventID: String?
     
     @IBOutlet var eventTableView: UITableView!
-    /* The user Firebase reference */
+
     let USER_REF = Database.database().reference().child("users")
     
     var CURRENT_USER_REF: DatabaseReference {
@@ -45,12 +43,16 @@ class EventList: UITableViewController {
         super.viewDidLoad()
         self.tableView.rowHeight = 70
         allEventsArray = [AllEvents(title: "Upcomming events", events: newEvents), AllEvents(title: "Previous events", events: oldEvents)]
-        
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+       // observeNewGuestbookMessages()
         eventObserver()
+        print("VIEW DID APPEAR")
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
+        self.eventTableView.reloadData()
+        print("VIEW WILL APPEAR")
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -60,9 +62,15 @@ class EventList: UITableViewController {
         USER_REF.removeAllObservers()
     }
     
+    var handle: UInt = 0
+    var eventRef: DatabaseReference {
+        return CURRENT_USER_EVENTS_REF
+    }
+    
     
     func eventObserver() {
-        CURRENT_USER_EVENTS_REF.observe(DataEventType.value, with: { (snapshot) in
+        print("Event observer from EVENTLIST!")
+        handle = eventRef.observe(DataEventType.value, with: { (snapshot) in
             self.allEventsArray[1].events.removeAll()
             self.allEventsArray[0].events.removeAll()
             for child in snapshot.children.allObjects as! [DataSnapshot] {
@@ -71,7 +79,6 @@ class EventList: UITableViewController {
                 let hasBeenRead =  child.childSnapshot(forPath: "hasBeenRead").value as! Bool
                 
                 let timeStamp = child.childSnapshot(forPath: "timeStamp").value as! Int
-                
                 
                 self.getEvent(eventID, completion: { (event) in
                     event.eventId = id
@@ -84,14 +91,11 @@ class EventList: UITableViewController {
                     
                     if (self.checkDate(eventDate: timeStamp)){
                         self.allEventsArray[0].events.append(event)
-                        
-                        
                     }
                     else {
                         self.allEventsArray[1].events.append(event)
                         self.allEventsArray[1].events.sort(by: {$1.time > $0.time})
                     }
-                    
                     self.eventTableView.reloadData()
                 })
             }
@@ -101,7 +105,55 @@ class EventList: UITableViewController {
             }
         })
         
+//        eventRef.removeObserver(withHandle: handle)
+//        print("event observer removed")
+//        newEventObserver()
+        
     }
+    
+    
+    func newEventObserver() {
+        handle = eventRef.observe(DataEventType.childAdded, with: { (snapshot) in
+            self.allEventsArray[1].events.removeAll()
+            self.allEventsArray[0].events.removeAll()
+            for child in snapshot.children.allObjects as! [DataSnapshot] {
+                let id = child.key
+                let eventID = child.childSnapshot(forPath: "eventID").value as! String
+                let hasBeenRead =  child.childSnapshot(forPath: "hasBeenRead").value as! Bool
+                
+                let timeStamp = child.childSnapshot(forPath: "timeStamp").value as! Int
+                
+                self.getEvent(eventID, completion: { (event) in
+                    event.eventId = id
+                    event.eventReference = eventID
+                    event.hasBeenRead = hasBeenRead
+                    
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateStyle = DateFormatter.Style.short
+                    
+                    
+                    if (self.checkDate(eventDate: timeStamp)){
+                        self.allEventsArray[0].events.append(event)
+                    }
+                    else {
+                        self.allEventsArray[1].events.append(event)
+                        self.allEventsArray[1].events.sort(by: {$1.time > $0.time})
+                    }
+                    self.eventTableView.reloadData()
+                })
+            }
+            
+            if snapshot.childrenCount == 0 {
+                self.eventTableView.reloadData()
+            }
+        })
+        
+        eventRef.removeObserver(withHandle: handle)
+        print("CHILD ADDED")
+        //observeNewGuestbookMessages()
+        
+    }
+    
     
     func checkDate(eventDate: Int)->Bool{
         let todaysTime = Int(Date().timeIntervalSince1970)
@@ -139,19 +191,13 @@ class EventList: UITableViewController {
                 }
                 invitedFriends.append(invitedFriend)
             }
-            
-            
+     
             completion(Event(title: title, time: time, description: description, soundRef: soundRef, imageRef: imageRef, latitude: latitude, longitude: longitude, type: type, invitedFriends: invitedFriends, host: host, newTextMessage: newTextMessage))
         })
     }
     
     
-    
-    
-    
-    
-    // MARK: - Table view data source
-    
+  //MARK: TABLEVIEW Functions
     override func numberOfSections(in tableView: UITableView) -> Int {
         return allEventsArray.count
         
@@ -175,21 +221,22 @@ class EventList: UITableViewController {
             cell.badgeView.isHidden = false
             cell.badgeLabel.text = "+1"
         }
+        else {
+            cell.badgeView.isHidden = true
+           
+        }
         
         let index = allEventsArray[indexPath.section].events[indexPath.row].time.index(of: "&")!
         let dateStr = allEventsArray[indexPath.section].events[indexPath.row].time[..<index]
         let index2 = allEventsArray[indexPath.section].events[indexPath.row].time.index(index, offsetBy: 1)
         let timeStr = allEventsArray[indexPath.section].events[indexPath.row].time[index2...]
         
-        
-        
         cell.eventTitle.text = allEventsArray[indexPath.section].events[indexPath.row].title
         cell.eventDate.text = String(dateStr)
         cell.eventTime.text = String(timeStr)
         cell.eventTypeImage.layer.masksToBounds = false
-        cell.eventTypeImage.layer.cornerRadius = 20
+        cell.eventTypeImage.layer.cornerRadius = 25
         cell.eventTypeImage.clipsToBounds = true
-        
         
         switch allEventsArray[indexPath.section].events[indexPath.row].type {
         case "Öl":
@@ -236,9 +283,14 @@ class EventList: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let indexPath = IndexPath(row: indexPath.row, section: indexPath.section)
+        let cell = tableView.cellForRow(at: indexPath) as! EventListCell
+        cell.badgeView.isHidden = true
+        cell.badgeLabel.isHidden = true
+
         performSegue(withIdentifier: "eventListToPopUp", sender: self)
+
     }
-    
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 40
@@ -246,8 +298,6 @@ class EventList: UITableViewController {
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
-        
-        
         view.backgroundColor = PURPLE_COLOR
         
         let label = UILabel()
@@ -257,16 +307,14 @@ class EventList: UITableViewController {
         return view
     }
     
-    
-    
-    
+
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             print("Deleted")
             
             if let eventID = self.allEventsArray[indexPath.section].events[indexPath.row].eventId {
                 print(eventID)
-            
+                
                 self.removeEvent(eventID)
             }
             self.allEventsArray[indexPath.section].events.remove(at: indexPath.row)
@@ -275,13 +323,37 @@ class EventList: UITableViewController {
         }
     }
     
+//    //MARK: NEW GUESTBOOK OBSERVER
+//    func observeNewGuestbookMessages() {
+//        let guestbookRef = Database.database().reference().child("Events")
+//        guestbookRef.observe(.childChanged, with: { (snapshot) -> Void in
+//            let id = snapshot.key
+//            let newMessage = snapshot.childSnapshot(forPath: "invitedFriends").childSnapshot(forPath: String(self.CURRENT_USER_ID)).childSnapshot(forPath: "newTextMessage").value as! Bool
+//            for events in self.allEventsArray{
+//                for event in events.events{
+//                    if(event.eventReference == id){
+//                        print("NEW MESSAGE UPDATE")
+//                        event.hasUnreadTextMessage = newMessage
+//                        self.tableView.reloadData()
+//
+//                    }
+//                }
+//            }
+
+//            print("NEW GUESTBOOK: \(newMessage), \(id)")
+//                if (id == self.CURRENT_USER_ID) {
+//                    print("NEW GUESTBOOK: \(newMessage)")
+//                    self.tableView.reloadData()
+//                }
+//        })
+//    }
+    
+    
     
     func removeEvent(_ eventID: String) {
         CURRENT_USER_REF.child("Events").child(eventID).removeValue()
         
     }
-    
-    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let destination = segue.destination as? EventPopUP {
@@ -291,14 +363,21 @@ class EventList: UITableViewController {
                 
                 if let id = allEventsArray[indexPath.section].events[selectedRow].eventId{
                     destination.eventID = id
-                    
                 }
             }
-            
-            
         }
     }
     
     
     
+  
 }
+
+
+
+
+
+
+
+
+

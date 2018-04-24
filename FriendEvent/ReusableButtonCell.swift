@@ -9,7 +9,6 @@
 import UIKit
 
 class ReusableButtonCell: UICollectionViewCell {
-
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var button: UIButton!
     @IBOutlet weak var dateButton: UIButtonX!

@@ -33,11 +33,10 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
         return CURRENT_USER_REF.child("friends")
     }
     var databaseRef = Database.database().reference()
-    
     var userArray = [User]()
     var filtredUsers = [User]()
     var friendsIDsList = [String]()
-    
+    var otherUser: NSDictionary?
     
     
     @IBOutlet var userTableView: UITableView!
@@ -56,19 +55,12 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
         fetchUsers()
         self.userTableView.delegate = self
         self.userTableView.dataSource = self
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
         
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
-    
-
-    var otherUser: NSDictionary?
     
     
     func fetchUsers(){
-         Database.database().reference().child("users").observe(.childAdded, with: { (snapshot) in
+        Database.database().reference().child("users").observe(.childAdded, with: { (snapshot) in
             let email = snapshot.childSnapshot(forPath: "Email").value as! String
             let id = snapshot.key as String
             let name = snapshot.childSnapshot(forPath: "username").value as! String
@@ -86,8 +78,7 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
     func sendRequestToUser(_ userID: String) {
         USER_REF.child(userID).child("requests").child(CURRENT_USER_ID).setValue(true)
     }
-    
-    
+
     // MARK: - Table view data source
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -105,7 +96,6 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
         }
     }
     
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let user : User
         
@@ -121,7 +111,7 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
         
         for friendsID in friendsIDsList{
             if user.id == friendsID{
-               cell.button.isHidden = true
+                cell.button.isHidden = true
             }
         }
         cell.button.addTarget(self, action: #selector(pressButton(_:)), for: .touchUpInside)
@@ -137,10 +127,7 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
-        
-        
         view.backgroundColor = PURPLE_COLOR
-        
         let label = UILabel()
         label.frame = CGRect(x: 20, y: 5, width: 300, height: 35)
         label.text = "All users"
@@ -148,13 +135,10 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
         return view
     }
     
-    
     @objc func pressButton(_ button: UIButton) {
         button.isHidden = true
         if searchController.isActive && searchController.searchBar.text != ""{
             sendRequestToUser(filtredUsers[button.tag].id)
-            
-            
         }
         else {
             sendRequestToUser(userArray[button.tag].id)
@@ -184,7 +168,7 @@ class FindFriends: UITableViewController, UISearchResultsUpdating {
             
         }
         userTableView.reloadData()
-       
+        
     }
     
     func updateSearchResults(for searchController: UISearchController) {

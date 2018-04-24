@@ -23,7 +23,7 @@ class LogIn: UIViewController {
     @IBOutlet weak var facebookSignUpButtonOutlet: UIButtonX!
     @IBOutlet weak var forgotPasswordHaveAccountOutlet: UIButton!
     @IBOutlet weak var startUpView: UIView!
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +37,7 @@ class LogIn: UIViewController {
             }
         }
     }
-
+    
     //MARK: LoginButton - changes to Create user when SIGN UP button is pressed
     @IBAction func loginButton(_ sender: UIButton) {
         guard let email = emailTextField.text else {return}
@@ -52,7 +52,7 @@ class LogIn: UIViewController {
         }
         
         if (emailTextField.text != nil && passwordTextField.text != nil){
-            if (loginButtonOutlet.titleLabel?.text == "Login"){ //Log in
+            if (loginButtonOutlet.titleLabel?.text == "Log in"){ //Log in
                 Auth.auth().signIn(withEmail: email, password: password, completion: { (user, error) in
                     if (user != nil){
                         
@@ -60,8 +60,9 @@ class LogIn: UIViewController {
                         guard let uid = user?.uid else {return}
                         let values = ["Email": email, "fromDevice": AppDelegate.DEVICEID, "latitude": latitude, "longitude": longitude] as [String : Any]
                         let ref = Database.database().reference().child("users").child(uid)
-                        
                         ref.updateChildValues(values)
+                        
+                        print(AppDelegate.DEVICEID)
                         self.performSegue(withIdentifier: "loginSegue", sender: self)
                     }
                     else{
@@ -75,6 +76,23 @@ class LogIn: UIViewController {
                     }
                 })
             }
+            else if (loginButtonOutlet.titleLabel?.text == "Send email") { //Forgot password
+                usernameOutlet.isHidden = true
+                signUpButtonOutlet.isHidden = false
+                passwordTextField.isHidden = false
+                facebookSignUpButtonOutlet.isHidden = false
+                emailTextField.placeholder = "Email"
+                loginButtonOutlet.setTitle("Log in", for: .normal)
+                forgotPasswordHaveAccountOutlet.setTitle("I forgot my password", for: .normal)
+                Auth.auth().sendPasswordReset(withEmail: emailTextField.text!) { (error) in
+                    if error == nil{
+                    self.alert(title: "Varifiation email sent", message: "Check your email to reset your password")
+                    }
+                    else {
+                        self.alert(title: "Something went wrong", message: (error?.localizedDescription)!)
+                    }
+                }
+            }
             else{
                 guard let username = usernameOutlet.text else {return}
                 if username != "" {
@@ -86,7 +104,7 @@ class LogIn: UIViewController {
                             ref.updateChildValues(values)
                             self.alert(title: "Successfully registered!", message: "Welcome to Quick Inviter!")
                             
-                            self.loginButtonOutlet.setTitle("Login", for: .normal)
+                            self.loginButtonOutlet.setTitle("Log in", for: .normal)
                             self.signUpButtonOutlet.isHidden = false
                             self.facebookSignUpButtonOutlet.isHidden = false
                             self.usernameOutlet.isHidden = true
@@ -119,15 +137,31 @@ class LogIn: UIViewController {
     //MARK - TODO: send email to user?
     @IBAction func forgotPasswordAndAlreadyHaveAccountButton(_ sender: UIButton) {
         if (forgotPasswordHaveAccountOutlet.titleLabel?.text == "I already have an account"){
-            loginButtonOutlet.setTitle("Login", for: .normal)
+            loginButtonOutlet.setTitle("Log in", for: .normal)
             usernameOutlet.isHidden = true
             signUpButtonOutlet.isHidden = false
             facebookSignUpButtonOutlet.isHidden = false
             forgotPasswordHaveAccountOutlet.setTitle("I forgot my password", for: .normal)
             
         }
+        else if (forgotPasswordHaveAccountOutlet.titleLabel?.text == "Log in") {
+            usernameOutlet.isHidden = true
+            signUpButtonOutlet.isHidden = false
+            passwordTextField.isHidden = false
+            facebookSignUpButtonOutlet.isHidden = false
+            emailTextField.placeholder = "Email"
+            loginButtonOutlet.setTitle("Log in", for: .normal)
+            forgotPasswordHaveAccountOutlet.setTitle("I forgot my password", for: .normal)
+        }
         else {
-            
+            usernameOutlet.isHidden = true
+            signUpButtonOutlet.isHidden = true
+            passwordTextField.isHidden = true
+            facebookSignUpButtonOutlet.isHidden = true
+            emailTextField.placeholder = "Enter your email address"
+            forgotPasswordHaveAccountOutlet.setTitle("Log in", for: .normal)
+            loginButtonOutlet.setTitle("Send email", for: .normal)
+
         }
     }
     
@@ -139,14 +173,14 @@ class LogIn: UIViewController {
                 self.alert(title: "Failed to login", message: (error.localizedDescription))
                 return
             }
-       
+            
             guard let accessToken = FBSDKAccessToken.current() else {
                 print("Failed to get access token")
                 return
             }
             
             let credential = FacebookAuthProvider.credential(withAccessToken: accessToken.tokenString)
- 
+            
             // Perform login by calling Firebase APIs
             Auth.auth().signIn(with: credential, completion: { (user, error) in
                 if let error = error {
@@ -160,7 +194,7 @@ class LogIn: UIViewController {
                 }
                 if let currentUser = Auth.auth().currentUser {
                     self.usernameOutlet.text = currentUser.displayName
-                   
+                    
                     let userEmail = currentUser.email
                     let userName = currentUser.displayName
                     
@@ -173,25 +207,25 @@ class LogIn: UIViewController {
                         longitude = longitude1
                     }
                     
-                   // guard let latitude = AppDelegate.locationPlace?.latitude else {return}
-                   // guard let longitude = AppDelegate.locationPlace?.longitude else {return}
+                    // guard let latitude = AppDelegate.locationPlace?.latitude else {return}
+                    // guard let longitude = AppDelegate.locationPlace?.longitude else {return}
                     
                     
                     let values = ["username": userName!, "Email": userEmail!, "fromDevice": AppDelegate.DEVICEID, "latitude": latitude, "longitude": longitude, "showPosition": true] as [String : Any]
-                    
+                    print(AppDelegate.DEVICEID)
                     let ref = Database.database().reference().child("users").child(currentUser.uid)
                     
                     ref.updateChildValues(values)
                 }
                 // Present the main view
-               
+                
                 self.performSegue(withIdentifier: "loginSegue", sender: self)
             })
             
         }
     }
     
-  
+    
     
 }
 

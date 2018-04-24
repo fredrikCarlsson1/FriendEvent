@@ -11,7 +11,7 @@ import MapKit
 import FirebaseDatabase
 import FirebaseAuth
 
-class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITextFieldDelegate {
     
     @IBOutlet weak var newEventBadge: UIImageView!
     @IBOutlet weak var newEventBadgeLabel: UILabel!
@@ -74,6 +74,9 @@ class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate,
         privateMessageCollectionView.alwaysBounceVertical = true
         privateMessageCollectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         self.hideKeyboardWhenTappedAround()
+        observeNewPrivateMessages()
+        addFriendObserver()
+        self.sendMessageTextField.delegate = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -81,7 +84,6 @@ class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate,
         addRequestObserver()
         eventObserver()
         zoomInOnLocation()
-        addFriendObserver()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -89,12 +91,13 @@ class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate,
         self.newGuestbookView.isHidden = true
         self.newEventBadge.isHidden = true
         self.newEventBadgeLabel.isHidden = true
+        removeUserObserver()
     }
     
     func removeUserObserver() {
         USER_REF.removeAllObservers()
     }
-
+    
     
     //MARK: ALL map functions
     func getDistance(latitude: Double, longitude: Double) -> Int{
@@ -106,7 +109,7 @@ class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate,
         
         return Int(distanceInMeters*0.001)
     }
-  
+    
     func placeAnnotation(user: User) {
         //create annotation
         let annotation = MKPointAnnotation()
@@ -129,13 +132,13 @@ class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate,
                 annotationView.canShowCallout = true
                 annotationView.annotation = annotation
             }
-            annotationView.image = UIImage(named: "user")
+            annotationView.image = UIImage(named: "profile-button")
             annotationView.clipsToBounds = false
-            annotationView.layer.shadowColor = UIColor.lightGray.cgColor
-            annotationView.layer.shadowOpacity = 0.4
-            annotationView.layer.shadowOffset = CGSize.zero
-            annotationView.layer.shadowRadius = 10
-            annotationView.layer.shadowPath = UIBezierPath(roundedRect: annotationView.bounds, cornerRadius: 10).cgPath
+//            annotationView.layer.shadowColor = UIColor.lightGray.cgColor
+//            annotationView.layer.shadowOpacity = 0.4
+//            annotationView.layer.shadowOffset = CGSize.zero
+//            annotationView.layer.shadowRadius = 10
+//            annotationView.layer.shadowPath = UIBezierPath(roundedRect: annotationView.bounds, cornerRadius: 10).cgPath
             
             let transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
             annotationView.transform = transform
@@ -192,7 +195,6 @@ class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate,
     //MARK: FRIENDS - Adds a friend observer. The completion function will run every time this list changes, allowing you
     // to update your UI. Keeps the friendlist under the mapview updated
     func addFriendObserver() {
-        print("addFriendOBSERVER")
         CURRENT_USER_FRIENDS_REF.observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
             self.friendList.removeAll()
             for child in snapshot.children.allObjects as! [DataSnapshot] {
@@ -226,7 +228,7 @@ class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate,
             let distance = self.getDistance(latitude: latitude, longitude: longitude)
             let name = snapshot.childSnapshot(forPath: "username").value as! String
             let messageArray = [Messages]()
-
+            
             completion(User(email: email, userID: id, name: name, latitude: latitude, longitude: longitude, distance: distance, privateMessages: messageArray))
         })
     }
@@ -355,7 +357,7 @@ class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate,
             
         }
     }
-
+    
     //Go to all eventlist
     @IBAction func newEventSegue(_ sender: UIButton) {
         performSegue(withIdentifier: "newEventSegue", sender: self)
@@ -414,12 +416,19 @@ class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate,
             self.privateMessageView.alpha = 0
         }, completion: nil)
         self.closePrivateMessageOutlet.isHidden = true
+        commentsRef.removeObserver(withHandle: handle)
+        
+    }
+    
+    var handle: UInt = 0
+    var commentsRef: DatabaseReference {
+        return CURRENT_USER_REF.child("friends").child((selectedFriend?.id)!).child("messages")
     }
     
     func observePrivateMessages() {
-        let commentsRef = CURRENT_USER_REF.child("friends").child((selectedFriend?.id)!).child("messages")
+        
         self.selectedFriend?.privateMessages!.removeAll()
-        commentsRef.observe(.childAdded, with: { (snapshot) -> Void in
+        handle = commentsRef.observe(.childAdded, with: { (snapshot) -> Void in
             let text = snapshot.childSnapshot(forPath: "text").value as! String
             let time = snapshot.childSnapshot(forPath: "timeStamp").value as! Int
             let from = snapshot.childSnapshot(forPath: "from").value as! String
@@ -494,6 +503,28 @@ class StartView: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate,
         let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
         
         return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 14)], context: nil)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        sendMessage()
+        self.privateMessageCollectionView.reloadData()
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    //MARK: NEW PRIVATE MESSAGE OBSERVER
+    func observeNewPrivateMessages() {
+        let commentsRef = CURRENT_USER_REF.child("friends")
+        commentsRef.observe(.childChanged, with: { (snapshot) -> Void in
+            let id = snapshot.key
+            let newMessage = snapshot.childSnapshot(forPath: "newMessage").value as! Bool
+            for friend in self.friendList {
+                if id == friend.id{
+                    friend.newPrivateMessage = newMessage
+                    self.tableView.reloadData()
+                }
+            }
+        })
     }
     
     

@@ -11,7 +11,6 @@ import UIKit
 class TabBarController: UITabBarController {
     var counter: Int?
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         let tabItems = self.tabBar.items as NSArray?
@@ -24,12 +23,6 @@ class TabBarController: UITabBarController {
                 tabItem.badgeValue = String(friendCount)
             }
         }
-        
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        
-    }
-    
-    
+
 }

@@ -20,7 +20,6 @@ class CanvasView: UIView {
             context.addLine(to: CGPoint(x: 140, y: 123))
             context.addLine(to: CGPoint(x: 540, y: 903))
             context.strokePath()
-            
         }
     }
     

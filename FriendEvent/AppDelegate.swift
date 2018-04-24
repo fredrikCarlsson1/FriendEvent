@@ -212,6 +212,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         guard let token = InstanceID.instanceID().token() else {return}
+        //Messaging.messaging().apnsToken = deviceToken
+//        Auth.auth().setAPNSToken(deviceToken, type: AuthAPNSTokenType.prod)
+//        InstanceID.instanceID().token()
         AppDelegate.DEVICEID = token
         connectToFCM()
     }

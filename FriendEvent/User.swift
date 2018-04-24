@@ -31,6 +31,6 @@ class User {
         self.newPrivateMessage = newPrivateMessage
     }
     
-
+    
     
 }

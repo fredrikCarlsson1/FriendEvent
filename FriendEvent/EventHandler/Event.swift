@@ -24,7 +24,6 @@ class Event {
     var hasUnreadTextMessage: Bool
     var hasBeenRead: Bool?
     
-    
     init(title: String, time: String, description: String?, soundRef: String?, imageRef: String?, latitude: Double, longitude: Double, type: String, invitedFriends: [[String:[String:String]]], host: String, newTextMessage: Bool = false){
         self.title = title
         self.time = time

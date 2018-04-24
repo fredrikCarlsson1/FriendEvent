@@ -18,7 +18,7 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
     @IBOutlet weak var closeNewPasswordViewOutlet: UIButton!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var usernameView: UIView!
-    
+    @IBOutlet weak var tableView: UITableView!
     
     var CURRENT_USER_ID: String {
         let id = Auth.auth().currentUser!.uid
@@ -36,8 +36,6 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
         return email!
     }
     
-    @IBOutlet weak var tableView: UITableView!
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,11 +44,7 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
         self.hideKeyboardWhenTappedAround()
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
+    //MARK: TableView
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -81,7 +75,7 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
         }
         else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "showLocationCell", for: indexPath) as! ShowPositionCell
-          
+            
             if CLLocationManager.locationServicesEnabled(){
                 switch CLLocationManager.authorizationStatus() {
                 case .notDetermined, .restricted, .denied:
@@ -97,7 +91,7 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
                             cell.showPositionSwitch.isOn = true
                         }
                         else {
-                             cell.showPositionSwitch.isOn = false
+                            cell.showPositionSwitch.isOn = false
                         }
                         
                     })
@@ -107,22 +101,18 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
             else {
                 print("no background updates")
             }
-
-            
-            
             return cell
         }
     }
     
     
-    
+    //MARK: CHANGE PASSWORD
     @IBAction func passwordButton(_ sender: UIButton) {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.curveEaseIn], animations: {
             self.newPasswordView.transform = .identity
         }, completion: nil)
         
         self.closeNewPasswordViewOutlet.isHidden = false
-        
     }
     
     typealias Completion = (Error?) -> Void
@@ -139,7 +129,6 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
                 completion(error)
             }
         })
-        
     }
     
     @IBAction func changePasswordButton(_ sender: UIButton) {
@@ -147,24 +136,24 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
         if let oldPassword = oldPasswordTextField.text {
             if let newPassword = newPasswordTextField.text{
                 self.changePassword(email: CURRENT_USER_EMAIL, currentPassword: oldPassword, newPassword: newPassword)
-                    { (error) in
-                        if error == nil {
-                            self.alert(title: "Password updated" , message: "Your password has been changed")
-                        }else {
+                { (error) in
+                    if error == nil {
+                        self.alert(title: "Password updated" , message: "Your password has been changed")
+                    }else {
                         
                         self.alert(title: "Something went wrong", message: "Make sure your old password is correct and the new contains at least six characters")
-                        }
+                    }
                 }
-                
             }
-        
             self.minimizePasswordAndUsernameView()
         }
         else {
             alert(title: "Missing information", message: "You need to fill in your previous- and your new password")
         }
-
+        
     }
+    
+    //Closes the views for changing password and username
     func minimizePasswordAndUsernameView() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.curveEaseIn], animations: {
             self.usernameView.transform = CGAffineTransform.init(scaleX: 1, y: 0)
@@ -172,47 +161,32 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
         }, completion: nil)
         self.closeNewPasswordViewOutlet.isHidden = true
     }
-
-    
-
-    
-    @IBAction func signOutButton(_ sender: UIButton) {
-        self.logoutAccount()
-        performSegue(withIdentifier: "logOutSegue", sender: self)
-        
-    }
-    
-    /** Logs out an account */
-    func logoutAccount() {
-        try! Auth.auth().signOut()
-        print("signed out")
-    }
     
     @IBAction func closeNewPasswordViewButton(_ sender: UIButton) {
-         self.minimizePasswordAndUsernameView()
+        self.minimizePasswordAndUsernameView()
         
     }
     
     
+    //MARK: CHANGE USERNAME
     @IBAction func showChangeUsernameView(_ sender: UIButton) {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: [.curveEaseIn], animations: {
             
-        self.usernameView.transform = .identity
+            self.usernameView.transform = .identity
         }, completion: nil)
         self.closeNewPasswordViewOutlet.isHidden = false
     }
-
+    
     @IBAction func changeUsernameButton(_ sender: UIButton) {
         if let userName = usernameTextField.text { CURRENT_USER_REF.updateChildValues(["username" : userName])
         }
         self.minimizePasswordAndUsernameView()
         
         tableView.reloadData()
-        
-        
     }
     
     
+    //MARK: SWITCH FOR SHOWING POSITION
     @IBAction func showMyLocationSwitch(_ sender: UISwitch) {
         switch CLLocationManager.authorizationStatus() {
         case .notDetermined, .restricted, .denied:
@@ -226,7 +200,7 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
         case .authorizedAlways, .authorizedWhenInUse:
             break
         }
-
+        
         if sender.isOn{
             CURRENT_USER_REF.child("showPosition").setValue(true)
             AppDelegate.showPosition = true
@@ -238,7 +212,22 @@ class Profile: UIViewController, CLLocationManagerDelegate, UITableViewDelegate,
             AppDelegate.showPosition = false
         }
     }
-
+    
+    
+    //MARK: SIGN OUT FROM ACCOUNT
+    @IBAction func signOutButton(_ sender: UIButton) {
+        self.logoutAccount()
+        performSegue(withIdentifier: "logOutSegue", sender: self)
+        
+    }
+    
+    /** Logs out an account */
+    func logoutAccount() {
+        try! Auth.auth().signOut()
+        print("signed out")
+    }
+    
+    
     
 }
 
