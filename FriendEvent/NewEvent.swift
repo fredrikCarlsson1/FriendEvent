@@ -587,7 +587,7 @@ class NewEvent: UIViewController, MKMapViewDelegate, UISearchBarDelegate, Messag
                     popUpView.alpha = 0
                     self.blurView.isHidden = true
                     
-                    alert(title: "Invite sent", message: "Enjoy your upcomming event")
+                    alert(title: "Invite sent", message: "Enjoy your upcoming event")
                 }
                 else {
                     alert(title: "Missing information", message: "You need to select a date for your event")

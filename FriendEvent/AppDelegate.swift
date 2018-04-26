@@ -167,7 +167,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     @objc func updatePositionInBackground(){
-        print("updatePositionInBackground!!!")
+        
         
         guard let latitude = AppDelegate.locationPlace?.latitude else {return}
         guard let longitude = AppDelegate.locationPlace?.longitude else {return}
@@ -186,7 +186,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     let values = ["latitude": latitude, "longitude": longitude] as [String : Any]
                     
                     CURRENT_USER_REF.updateChildValues(values)
-                            print("position Updated")
+                    
                 }
             }else{
                 print("user dosnt exist")

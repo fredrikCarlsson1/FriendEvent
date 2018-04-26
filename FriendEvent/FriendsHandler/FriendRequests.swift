@@ -77,7 +77,7 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
         USER_REF.child(userID).child("friends").child(CURRENT_USER_ID).child("newMessage").setValue(false)
         USER_REF.child(userID).child("friends").child(CURRENT_USER_ID).child("messages").setValue(true)
         USER_REF.child(userID).child("requests").child(CURRENT_USER_ID).removeValue()
-        //addRequestObserver()
+
 
     }
     
@@ -130,6 +130,7 @@ class FriendRequests: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
  
     @objc func acceptButton(_ button: UIButton) {
+        print(button.tag);
         acceptFriendRequest(requestList[button.tag].id)
     }
     

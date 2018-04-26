@@ -38,9 +38,19 @@ class MyFriends: UITableViewController, CLLocationManagerDelegate {
         super.viewDidLoad()
         getMyLocation()
         self.tableView.rowHeight = 60
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         addFriendObserver()
     }
     
+
+
+    func removeUserObserver() {
+        USER_REF.removeAllObservers()
+    }
+    
+  
     // MARK: - Table view data source
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -79,8 +89,13 @@ class MyFriends: UITableViewController, CLLocationManagerDelegate {
         
     }
     
+    var handle: UInt = 0
+    var friendRef: DatabaseReference {
+        return self.CURRENT_USER_FRIENDS_REF
+    }
+    
     func addFriendObserver() {
-        CURRENT_USER_FRIENDS_REF.observe(DataEventType.value, with: { (snapshot) in
+        friendRef.observe(DataEventType.value, with: { (snapshot) in
             self.friendLists.removeAll()
             for child in snapshot.children.allObjects as! [DataSnapshot] {
                 let id = child.key
@@ -98,6 +113,7 @@ class MyFriends: UITableViewController, CLLocationManagerDelegate {
                 
             }
         })
+        friendRef.removeObserver(withHandle: handle)
     }
     
     //MARK: GET USER -  Gets the User object for the specified user id

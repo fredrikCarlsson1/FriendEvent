@@ -15,8 +15,6 @@ import UIKit
             mask.path = path.cgPath
             self.layer.mask = mask
         }
-        
-
 }
 
 extension UIView {

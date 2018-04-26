@@ -42,17 +42,16 @@ class EventList: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.rowHeight = 70
-        allEventsArray = [AllEvents(title: "Upcomming events", events: newEvents), AllEvents(title: "Previous events", events: oldEvents)]
+        allEventsArray = [AllEvents(title: "Upcoming events", events: newEvents), AllEvents(title: "Previous events", events: oldEvents)]
        // observeNewGuestbookMessages()
         eventObserver()
-        print("VIEW DID APPEAR")
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         self.eventTableView.reloadData()
-        print("VIEW WILL APPEAR")
+        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
